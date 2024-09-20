@@ -1,9 +1,9 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 
 interface ResizableDivProps {
-  onResizeStart: () => void;
-  onResize: (width: number, height: number) => void;
-  onResizeEnd: () => void;
+  onResizeStart?: () => void;
+  onResize?: (width: number, height: number) => void;
+  onResizeEnd?: () => void;
   minWidth?: number;
   minHeight?: number;
   className?: string;
