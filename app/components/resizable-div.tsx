@@ -86,11 +86,6 @@ export function ResizableDiv({
         onMouseDown={startResizing}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            startResizing(e as unknown as React.MouseEvent);
-          }
-        }}
         aria-label="Resize"
       >
         <svg
