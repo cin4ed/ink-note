@@ -1,74 +1,107 @@
-import { useRef, MouseEvent, useState, ReactNode } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 
 interface ResizableDivProps {
   onResizeStart: () => void;
   onResize: (width: number, height: number) => void;
   onResizeEnd: () => void;
-  children: ReactNode;
+  minWidth?: number;
+  minHeight?: number;
+  className?: string;
+  children: React.ReactNode;
 }
 
 export function ResizableDiv({
   onResizeStart,
   onResize,
   onResizeEnd,
+  minWidth = 100,
+  minHeight = 100,
+  className = "",
   children,
 }: ResizableDivProps) {
   const container = useRef<HTMLDivElement>(null);
-  const handle = useRef<SVGSVGElement>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [initialSize, setInitialSize] = useState({ width: 0, height: 0 });
   const [initialMousePos, setInitialMousePos] = useState({ x: 0, y: 0 });
 
-  const resize = (e: globalThis.MouseEvent) => {
-    if (container.current == null) return;
+  const startResizing = useCallback(
+    (e: React.MouseEvent) => {
+      if (!container.current) return;
 
-    const width = container.current.offsetWidth;
-    const height = container.current.offsetHeight;
+      setIsResizing(true);
+      setInitialMousePos({ x: e.clientX, y: e.clientY });
+      setInitialSize({
+        width: container.current.offsetWidth,
+        height: container.current.offsetHeight,
+      });
+      if (onResizeStart) onResizeStart();
+    },
+    [onResizeStart],
+  );
 
-    const newWidth = width + (initialMousePos.x - e.clientX);
-    const newHeight = height + (initialMousePos.y - e.clientY);
+  const resize = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing || !container.current) return;
 
-    container.current.style.width = `${newWidth}px`;
-    container.current.style.height = `${newHeight}px`;
+      const deltaWidth = e.clientX - initialMousePos.x;
+      const deltaHeight = e.clientY - initialMousePos.y;
 
-    onResize(newWidth, newHeight);
-  };
+      const newWidth = Math.max(initialSize.width + deltaWidth, minWidth);
+      const newHeight = Math.max(initialSize.height + deltaHeight, minHeight);
 
-  const stopResizing = () => {
-    if (handle.current == null) return;
+      container.current.style.width = `${newWidth}px`;
+      container.current.style.height = `${newHeight}px`;
 
-    handle.current.removeEventListener("mousemove", resize);
-    handle.current.removeEventListener("mouseup", stopResizing);
+      if (onResize) onResize(newWidth, newHeight);
+    },
+    [isResizing, initialMousePos, initialSize, minWidth, minHeight, onResize],
+  );
 
-    onResizeEnd();
-  };
+  const stopResizing = useCallback(() => {
+    setIsResizing(false);
+    if (onResizeEnd) onResizeEnd();
+  }, [onResizeEnd]);
 
-  const startResizing = (e: MouseEvent) => {
-    if (handle.current == null) return;
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener("mousemove", resize);
+      window.addEventListener("mouseup", stopResizing);
+    }
 
-    console.log("hello");
-
-    // setInitialMousePos({
-    //   x: e.clientX,
-    //   y: e.clientY,
-    // });
-
-    // handle.current.addEventListener("mousemove", resize);
-    // handle.current.addEventListener("mouseup", stopResizing);
-
-    // onResizeStart();
-  };
+    return () => {
+      window.removeEventListener("mousemove", resize);
+      window.removeEventListener("mouseup", stopResizing);
+    };
+  }, [isResizing, resize, stopResizing]);
 
   return (
-    <div ref={container} className="relative">
+    <div
+      ref={container}
+      className={`relative ${className}`}
+      style={{ minWidth, minHeight }}
+    >
       {children}
-      <svg
+      <div
+        className="absolute right-0 bottom-0 w-5 h-5 cursor-nwse-resize"
         onMouseDown={startResizing}
-        viewBox="0 0 32 32"
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-5 h-5 absolute right-0 bottom-0"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            startResizing(e as unknown as React.MouseEvent);
+          }
+        }}
+        aria-label="Resize"
       >
-        <path d="M22.354 9.354l-.707-.707-13 13 .707.707zm0 7l-.707-.707-6 6 .707.707z" />
-        <path fill="none" d="M0 0h24v24H0z" />
-      </svg>
+        <svg
+          viewBox="0 0 32 32"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full"
+        >
+          <path d="M22.354 9.354l-.707-.707-13 13 .707.707zm0 7l-.707-.707-6 6 .707.707z" />
+          <path fill="none" d="M0 0h24v24H0z" />
+        </svg>
+      </div>
     </div>
   );
 }
