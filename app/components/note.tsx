@@ -7,7 +7,6 @@ export function Note() {
   const [showDraggableHandle, setShowDraggableHandle] = useState(false);
 
   return (
-    <div>
       <Rnd
         className="border overflow-hidden flex flex-col rounded"
         default={{
@@ -40,6 +39,5 @@ export function Note() {
           placeholder="Write Something..."
         ></textarea>
       </Rnd>
-    </div>
   );
 }
