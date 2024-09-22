@@ -1,19 +1,18 @@
 export function DragIcon({
   width,
   height,
-  fill,
+  className,
 }: {
   width: number;
   height: number;
-  fill: string;
+  className?: string;
 }) {
   return (
     <svg
-      fill={fill}
+      className={className}
       width={`${width}px`}
       height={`${height}px`}
       viewBox="0 0 24 24"
-      // viewBox={`0 0 ${width} ${height}`}
       xmlns="http://www.w3.org/2000/svg"
     >
       <g id="Interface / Drag_Vertical">
