@@ -19,4 +19,9 @@ export interface AppState {
     deleteNote: (id: string) => void;
     connectNotes: (sourceId: string, targetId: string) => void;
     disconnectNotes: (sourceId: string, targetId: string) => void;
+
+    // ID update & Focus management
+    focusTargetId: string | null;
+    setFocusTarget: (id: string | null) => void;
+    changeNoteId: (oldId: string, newId: string) => void;
 }

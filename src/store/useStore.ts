@@ -85,4 +85,35 @@ export const useStore = create<AppState>((set) => ({
                     : note
             ),
         })),
+
+    focusTargetId: null,
+    setFocusTarget: (id) => set({ focusTargetId: id }),
+
+    changeNoteId: (oldId, newId) =>
+        set((state) => {
+            if (state.notes.some((n) => n.id === newId)) {
+                console.warn(`Note ID collision: ${newId} already exists.`);
+                return state;
+            }
+
+            return {
+                focusTargetId: newId, // Trigger focus on the new ID
+                notes: state.notes.map((note) => {
+                    // Update ID of the target note
+                    if (note.id === oldId) {
+                        return { ...note, id: newId };
+                    }
+                    // Update references in connections for other notes
+                    if (note.connections.includes(oldId)) {
+                        return {
+                            ...note,
+                            connections: note.connections.map((connId) =>
+                                connId === oldId ? newId : connId
+                            ),
+                        };
+                    }
+                    return note;
+                }),
+            };
+        }),
 }));
