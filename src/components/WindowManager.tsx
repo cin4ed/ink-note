@@ -1,0 +1,24 @@
+import { useStore } from '../store/useStore';
+import { BackgroundGraph } from './BackgroundGraph';
+import { NoteWindow } from './NoteWindow';
+
+export const WindowManager = () => {
+    const notes = useStore((state) => state.notes);
+
+    return (
+        <div className="relative w-full h-full overflow-hidden">
+            {/* Background Layer */}
+            <BackgroundGraph />
+
+            {/* UI Layer */}
+            <div className="relative z-10 w-full h-full pointer-events-none">
+                {/* Make children pointer-events-auto */}
+                <div className="pointer-events-none w-full h-full">
+                    {notes.map((note) => (
+                        <NoteWindow key={note.id} note={note} />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
