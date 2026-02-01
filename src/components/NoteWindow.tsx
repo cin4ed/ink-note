@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import Draggable from 'react-draggable';
 import { X, ExternalLink } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { NoteEditor } from './NoteEditor';
 import type { Note } from '../types';
 
 interface NoteWindowProps {
@@ -89,13 +90,13 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                 </div>
 
                 {/* Content Area */}
-                <textarea
-                    ref={contentRef}
-                    value={note.content}
-                    onChange={(e) => updateNote(note.id, { content: e.target.value })}
-                    className="flex-grow w-full p-2 bg-transparent outline-none resize-none font-mono text-sm text-[var(--color-fg)] placeholder-[var(--color-fg)]/30"
-                    placeholder="Write something..."
-                />
+                <div className="flex-grow w-full overflow-hidden flex flex-col nodrag">
+                    <NoteEditor
+                        initialContent={note.content}
+                        noteId={note.id}
+                        onUpdate={(content) => updateNote(note.id, { content })}
+                    />
+                </div>
 
                 {/* Connection Handle (visual cue) */}
                 <div className="absolute bottom-1 right-1 opacity-20 pointer-events-none">

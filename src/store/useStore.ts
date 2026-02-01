@@ -99,20 +99,60 @@ export const useStore = create<AppState>((set) => ({
             return {
                 focusTargetId: newId, // Trigger focus on the new ID
                 notes: state.notes.map((note) => {
+                    let updatedNote = note;
+
                     // Update ID of the target note
                     if (note.id === oldId) {
-                        return { ...note, id: newId };
+                        updatedNote = { ...note, id: newId };
                     }
+
                     // Update references in connections for other notes
                     if (note.connections.includes(oldId)) {
-                        return {
-                            ...note,
-                            connections: note.connections.map((connId) =>
+                        updatedNote = {
+                            ...updatedNote,
+                            connections: updatedNote.connections.map((connId) =>
                                 connId === oldId ? newId : connId
                             ),
                         };
                     }
-                    return note;
+
+                    // Update Mention HTML in content (for ALL notes, including the one being renamed if it refers to itself somehow, though unlikely)
+                    // We need to replace data-id="oldId" with data-id="newId"
+                    // AND update the label if we want to keep it in sync with the new title (which we do, derived from the newId potentially, but we should probably look up the note's new title)
+                    // Wait, changeNoteId is called when the *title* changes (and thus ID).
+                    // So we know the new ID. We can infer the new label from the ID or just use the ID as the label for now?
+                    // Actually, the previous step in NoteWindow calculates newId from title.
+                    // But here we only have newId.
+                    // Ideally `changeNoteId` should also take `newTitle` or we find the note and get its title?
+                    // But the note with `oldId` isn't updated in the array yet.
+                    // Let's assume the label should match the newId formatted or we just update the ID link?
+                    // The user said: "update the reference labels when a note's title (and consequently its ID) changes"
+                    // So we should try to update the label too.
+                    // Let's just use the newId as the label for now (maybe prettified) or just the newId string.
+                    // Actually, looking at NoteWindow, we only pass newId.
+                    // Better approach: just use newId for the label for now since it's a slug.
+                    // Or, simpler: Just update data-id so the link works. The label might become stale?
+                    // The user said: "After the user selects a note... a badge... denotating this is a link"
+                    // "what will happen if the user changes the title... note already has referenced"
+                    // Updating the text content of the span is hard without a full DOM parser or strict regex.
+                    // Let's try a regex for the standard Tiptap mention markup.
+
+                    if (updatedNote.content.includes(`data-id="${oldId}"`)) {
+                        // Find the source note to get the new label (title)
+                        const sourceNote = state.notes.find(n => n.id === oldId);
+                        const newLabel = sourceNote ? sourceNote.title : newId;
+
+                        const regex = new RegExp(`(<span[^>]*data-id="${oldId}"[^>]*>)([^<]*)</span>`, 'g');
+
+                        const newContentWithLabel = updatedNote.content.replace(regex, (_match, openTag, _textContent) => {
+                            const newOpenTag = openTag.replace(`data-id="${oldId}"`, `data-id="${newId}"`);
+                            return `${newOpenTag}@${newLabel}</span>`;
+                        });
+
+                        updatedNote = { ...updatedNote, content: newContentWithLabel };
+                    }
+
+                    return updatedNote;
                 }),
             };
         }),
