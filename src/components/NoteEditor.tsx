@@ -14,7 +14,11 @@ interface NoteEditorProps {
     editable?: boolean;
 }
 
-export const NoteEditor: React.FC<NoteEditorProps> = ({ initialContent, noteId, onUpdate, editable = true }) => {
+export interface NoteEditorHandle {
+    focus: () => void;
+}
+
+export const NoteEditor = React.forwardRef<NoteEditorHandle, NoteEditorProps>(({ initialContent, noteId, onUpdate, editable = true }, ref) => {
     const notes = useStore((state) => state.notes);
 
     const editor = useEditor({
@@ -101,11 +105,11 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ initialContent, noteId, 
         }
     });
 
-    // Handle external updates (if multiple people editing, or store updates from elsewhere)
-    // Careful with loops here. Only update if valid and different?
-    // For now, simpler is better: initial load only.
-    // If we need reactivity to store changes (updates from other places), we might need `useEffect`
-    // but Tiptap manages its own state. Best to let Tiptap be the source of truth for the local instance.
+    React.useImperativeHandle(ref, () => ({
+        focus: () => {
+            editor?.commands.focus();
+        }
+    }), [editor]);
 
     return <EditorContent editor={editor} className="flex-grow w-full h-full overflow-y-auto" />;
-};
+});

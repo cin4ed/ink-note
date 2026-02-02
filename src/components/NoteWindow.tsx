@@ -3,6 +3,7 @@ import Draggable from 'react-draggable';
 import { X, ExternalLink } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { NoteEditor } from './NoteEditor';
+import type { NoteEditorHandle } from './NoteEditor';
 import type { Note } from '../types';
 
 interface NoteWindowProps {
@@ -17,14 +18,19 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     const setFocusTarget = useStore((state) => state.setFocusTarget);
 
     const nodeRef = useRef(null);
-    const contentRef = useRef<HTMLTextAreaElement>(null);
+    const contentRef = useRef<NoteEditorHandle>(null);
+    const titleRef = useRef<HTMLInputElement>(null);
 
-    // Auto-focus content if this note is the focus target
+    // Auto-focus title if this note is the focus target (e.g. just created)
+    // Auto-focus title if this note is the focus target (e.g. just created)
     React.useEffect(() => {
-        if (focusTargetId === note.id && contentRef.current) {
-            contentRef.current.focus();
-            // Optional: place cursor at end? contentRef.current.setSelectionRange(length, length);
-            setFocusTarget(null); // Clear target so it doesn't keep stealing focus
+        if (focusTargetId === note.id && titleRef.current) {
+            const timer = setTimeout(() => {
+                titleRef.current?.focus();
+                titleRef.current?.select();
+                setFocusTarget(null); // Clear target after focus is achieved
+            }, 100); // 100ms delay to be safe
+            return () => clearTimeout(timer);
         }
     }, [focusTargetId, note.id, setFocusTarget]);
 
@@ -98,6 +104,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                 <div className="flex items-center justify-between p-2 border-b border-[var(--color-fg)] cursor-move drag-handle group">
                     <div className="flex flex-col flex-grow min-w-0 mr-2">
                         <input
+                            ref={titleRef}
                             type="text"
                             value={note.title}
                             onChange={(e) => updateNote(note.id, { title: e.target.value })}
@@ -120,6 +127,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                 {/* Content Area */}
                 <div className="flex-grow w-full overflow-hidden flex flex-col nodrag">
                     <NoteEditor
+                        ref={contentRef}
                         initialContent={note.content}
                         noteId={note.id}
                         onUpdate={(content) => updateNote(note.id, { content })}

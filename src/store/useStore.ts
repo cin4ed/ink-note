@@ -31,7 +31,10 @@ export const useStore = create<AppState>((set) => ({
                 size: { width: INITIAL_NOTE_WIDTH, height: INITIAL_NOTE_HEIGHT },
                 connections: [],
             };
-            return { notes: [...state.notes, newNote] };
+            return {
+                notes: [...state.notes, newNote],
+                focusTargetId: id
+            };
         }),
 
     updateNote: (id, updates) =>
