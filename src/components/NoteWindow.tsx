@@ -12,7 +12,7 @@ interface NoteWindowProps {
 
 export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     const updateNote = useStore((state) => state.updateNote);
-    const deleteNote = useStore((state) => state.deleteNote);
+    const closeNote = useStore((state) => state.closeNote);
     const changeNoteId = useStore((state) => state.changeNoteId);
     const focusTargetId = useStore((state) => state.focusTargetId);
     const setFocusTarget = useStore((state) => state.setFocusTarget);
@@ -116,7 +116,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                         <span className="text-[10px] opacity-40 font-mono select-none truncate">{note.id}</span>
                     </div>
                     <button
-                        onClick={() => deleteNote(note.id)}
+                        onClick={() => closeNote(note.id)}
                         className="text-[var(--color-fg)] hover:opacity-50 transition-opacity shrink-0"
                         aria-label="Close note"
                     >

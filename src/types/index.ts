@@ -15,6 +15,7 @@ export interface Note {
     position: Position;
     size?: Size;
     connections: string[]; // IDs of connected notes
+    isOpen?: boolean;
 }
 
 export interface AppState {
@@ -30,4 +31,5 @@ export interface AppState {
     focusTargetId: string | null;
     setFocusTarget: (id: string | null) => void;
     changeNoteId: (oldId: string, newId: string) => void;
+    closeNote: (id: string) => void;
 }

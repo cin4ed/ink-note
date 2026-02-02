@@ -14,7 +14,7 @@ export const WindowManager = () => {
             <div className="relative z-10 w-full h-full pointer-events-none">
                 {/* Make children pointer-events-auto */}
                 <div className="pointer-events-none w-full h-full">
-                    {notes.map((note) => (
+                    {notes.filter(n => n.isOpen).map((note) => (
                         <NoteWindow key={note.id} note={note} />
                     ))}
                 </div>
