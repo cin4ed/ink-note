@@ -71,7 +71,7 @@ const GraphConnection = ({ startNode, endNode, color }: { startNode: SimNode; en
 
 const GraphScene = () => {
     const notes = useStore((state) => state.notes);
-    const [fgColor, setFgColor] = useState('black');
+    const [fgColor, setFgColor] = useState("");
 
     // Simulation state
     const simNodes = useRef<Map<string, SimNode>>(new Map());
