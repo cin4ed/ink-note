@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
-import { Line, OrbitControls } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { useStore } from '../store/useStore';
 
 // Helper to get CSS variable value
@@ -15,6 +15,59 @@ interface SimNode {
     position: THREE.Vector3;
     velocity: THREE.Vector3;
 }
+
+const GraphNode = ({ simNode, color }: { simNode: SimNode; color: string }) => {
+    const meshRef = useRef<THREE.Mesh>(null);
+
+    useFrame(() => {
+        if (meshRef.current) {
+            meshRef.current.position.copy(simNode.position);
+        }
+    });
+
+    return (
+        <mesh ref={meshRef}>
+            <sphereGeometry args={[0.15, 32, 32]} />
+            <meshStandardMaterial color={color} />
+        </mesh>
+    );
+};
+
+const GraphConnection = ({ startNode, endNode, color }: { startNode: SimNode; endNode: SimNode; color: string }) => {
+    const lineRef = useRef<any>(null);
+    const geometryRef = useRef<THREE.BufferGeometry>(null);
+
+    useFrame(() => {
+        if (lineRef.current && geometryRef.current) {
+            const positions = geometryRef.current.attributes.position.array as Float32Array;
+
+            positions[0] = startNode.position.x;
+            positions[1] = startNode.position.y;
+            positions[2] = startNode.position.z;
+
+            positions[3] = endNode.position.x;
+            positions[4] = endNode.position.y;
+            positions[5] = endNode.position.z;
+
+            geometryRef.current.attributes.position.needsUpdate = true;
+        }
+    });
+
+    return (
+        <line ref={lineRef}>
+            <bufferGeometry ref={geometryRef}>
+                <bufferAttribute
+                    attach="attributes-position"
+                    count={2}
+                    array={new Float32Array(6)}
+                    itemSize={3}
+                    args={[new Float32Array(6), 3]}
+                />
+            </bufferGeometry>
+            <lineBasicMaterial color={color} linewidth={1} />
+        </line>
+    );
+};
 
 const GraphScene = () => {
     const notes = useStore((state) => state.notes);
@@ -105,6 +158,13 @@ const GraphScene = () => {
 
     return (
         <group>
+            {/* Render Nodes */}
+            {notes.map((note) => {
+                const simNode = simNodes.current.get(note.id);
+                if (!simNode) return null;
+                return <GraphNode key={note.id} simNode={simNode} color={fgColor} />;
+            })}
+
             {/* Render Connections */}
             {notes.map(note =>
                 note.connections.map(targetId => {
@@ -115,28 +175,15 @@ const GraphScene = () => {
                     if (note.id > targetId) return null; // Avoid duplicates
 
                     return (
-                        <Line
+                        <GraphConnection
                             key={`${note.id}-${targetId}`}
-                            points={[startNode.position, endNode.position]}
+                            startNode={startNode}
+                            endNode={endNode}
                             color={fgColor}
-                            lineWidth={1}
                         />
                     );
                 })
             )}
-
-            {/* Render Nodes */}
-            {notes.map((note) => {
-                const simNode = simNodes.current.get(note.id);
-                if (!simNode) return null;
-
-                return (
-                    <mesh key={note.id} position={simNode.position}>
-                        <sphereGeometry args={[0.15, 32, 32]} />
-                        <meshStandardMaterial color={fgColor} />
-                    </mesh>
-                );
-            })}
         </group>
     );
 };

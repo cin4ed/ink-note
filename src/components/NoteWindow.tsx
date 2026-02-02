@@ -32,6 +32,30 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
         updateNote(note.id, { position: { x: data.x, y: data.y } });
     };
 
+    const handleResizeMouseDown = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startWidth = note.size?.width || 300;
+        const startHeight = note.size?.height || 200;
+
+        const onMouseMove = (moveEvent: MouseEvent) => {
+            const newWidth = Math.max(200, startWidth + (moveEvent.clientX - startX));
+            const newHeight = Math.max(150, startHeight + (moveEvent.clientY - startY));
+            updateNote(note.id, { size: { width: newWidth, height: newHeight } });
+        };
+
+        const onMouseUp = () => {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+        };
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+    };
+
     const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -64,7 +88,11 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
         >
             <div
                 ref={nodeRef}
-                className="pointer-events-auto absolute w-[300px] h-[200px] bg-[var(--color-bg)] border border-[var(--color-fg)] shadow-[4px_4px_0px_var(--color-fg)] flex flex-col overflow-hidden"
+                className="pointer-events-auto absolute bg-[var(--color-bg)] border border-[var(--color-fg)] shadow-[4px_4px_0px_var(--color-fg)] flex flex-col overflow-hidden"
+                style={{
+                    width: note.size?.width ?? 300,
+                    height: note.size?.height ?? 200
+                }}
             >
                 {/* Header / Drag Handle */}
                 <div className="flex items-center justify-between p-2 border-b border-[var(--color-fg)] cursor-move drag-handle group">
@@ -98,9 +126,14 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                     />
                 </div>
 
-                {/* Connection Handle (visual cue) */}
-                <div className="absolute bottom-1 right-1 opacity-20 pointer-events-none">
-                    <ExternalLink size={12} />
+                {/* Resize Handle */}
+                <div
+                    className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize nodrag flex items-end justify-end p-1 group z-10"
+                    onMouseDown={handleResizeMouseDown}
+                >
+                    <div className="opacity-20 group-hover:opacity-100 transition-opacity">
+                        <ExternalLink size={12} className="rotate-90 scale-x-[-1]" />
+                    </div>
                 </div>
             </div>
         </Draggable>

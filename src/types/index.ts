@@ -3,11 +3,17 @@ export interface Position {
     y: number;
 }
 
+export interface Size {
+    width: number;
+    height: number;
+}
+
 export interface Note {
     id: string;
     title: string;
     content: string;
     position: Position;
+    size?: Size;
     connections: string[]; // IDs of connected notes
 }
 

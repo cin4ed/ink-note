@@ -12,6 +12,7 @@ export const useStore = create<AppState>((set) => ({
             title: 'Welcome to ink-note',
             content: 'This is a minimalistic, node-based note taking app.\n\nDrag this window around!',
             position: { x: 100, y: 100 },
+            size: { width: INITIAL_NOTE_WIDTH, height: INITIAL_NOTE_HEIGHT },
             connections: [],
         },
     ],
@@ -27,6 +28,7 @@ export const useStore = create<AppState>((set) => ({
                     x: window.innerWidth / 2 - INITIAL_NOTE_WIDTH / 2 + (Math.random() * 50 - 25),
                     y: window.innerHeight / 2 - INITIAL_NOTE_HEIGHT / 2 + (Math.random() * 50 - 25)
                 },
+                size: { width: INITIAL_NOTE_WIDTH, height: INITIAL_NOTE_HEIGHT },
                 connections: [],
             };
             return { notes: [...state.notes, newNote] };
@@ -34,9 +36,26 @@ export const useStore = create<AppState>((set) => ({
 
     updateNote: (id, updates) =>
         set((state) => ({
-            notes: state.notes.map((note) =>
-                note.id === id ? { ...note, ...updates } : note
-            ),
+            notes: state.notes.map((note) => {
+                if (note.id !== id) return note;
+
+                const updatedNote = { ...note, ...updates };
+
+                // Parse content for connections if content was updated
+                if (updates.content !== undefined) {
+                    const matches = updates.content.matchAll(/data-id="([^"]+)"/g);
+                    const newConnections = new Set<string>();
+                    for (const match of matches) {
+                        const targetId = match[1];
+                        if (targetId && targetId !== id) {
+                            newConnections.add(targetId);
+                        }
+                    }
+                    updatedNote.connections = Array.from(newConnections);
+                }
+
+                return updatedNote;
+            }),
         })),
 
     deleteNote: (id) =>
