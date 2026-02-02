@@ -32,4 +32,5 @@ export interface AppState {
     setFocusTarget: (id: string | null) => void;
     changeNoteId: (oldId: string, newId: string) => void;
     closeNote: (id: string) => void;
+    openNote: (id: string) => void;
 }

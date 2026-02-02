@@ -185,6 +185,14 @@ export const useStore = create<AppState>()(persist((set) => ({
                 ),
             };
         }),
+
+    openNote: (id) =>
+        set((state) => ({
+            notes: state.notes.map((n) =>
+                n.id === id ? { ...n, isOpen: true } : n
+            ),
+            focusTargetId: id,
+        })),
 }), {
     name: 'ink-note-storage',
 }));
