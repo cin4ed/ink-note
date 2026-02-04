@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Html } from '@react-three/drei';
 import { useStore } from '../store/useStore';
 
 // Helper to get CSS variable value
@@ -16,7 +16,17 @@ interface SimNode {
     velocity: THREE.Vector3;
 }
 
-const GraphNode = ({ simNode, color }: { simNode: SimNode; color: string }) => {
+const GraphNode = ({
+    simNode,
+    color,
+    onHover,
+    onUnhover,
+}: {
+    simNode: SimNode;
+    color: string;
+    onHover: () => void;
+    onUnhover: () => void;
+}) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
     useFrame(() => {
@@ -26,7 +36,7 @@ const GraphNode = ({ simNode, color }: { simNode: SimNode; color: string }) => {
     });
 
     return (
-        <mesh ref={meshRef}>
+        <mesh ref={meshRef} onPointerOver={onHover} onPointerOut={onUnhover}>
             <sphereGeometry args={[0.15, 32, 32]} />
             <meshStandardMaterial color={color} />
         </mesh>
@@ -72,6 +82,7 @@ const GraphConnection = ({ startNode, endNode, color }: { startNode: SimNode; en
 const GraphScene = () => {
     const notes = useStore((state) => state.notes);
     const [fgColor, setFgColor] = useState("");
+    const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
 
     // Simulation state
     const simNodes = useRef<Map<string, SimNode>>(new Map());
@@ -110,6 +121,7 @@ const GraphScene = () => {
 
     // Force-directed simulation step
     useFrame(() => {
+        if (hoveredNoteId) return;
         const nodes = Array.from(simNodes.current.values());
         const repulsion = 0.5;
         const springLength = 3;
@@ -167,7 +179,15 @@ const GraphScene = () => {
             {notes.map((note) => {
                 const simNode = simNodes.current.get(note.id);
                 if (!simNode) return null;
-                return <GraphNode key={note.id} simNode={simNode} color={fgColor} />;
+                return (
+                    <GraphNode
+                        key={note.id}
+                        simNode={simNode}
+                        color={fgColor}
+                        onHover={() => setHoveredNoteId(note.id)}
+                        onUnhover={() => setHoveredNoteId((current) => (current === note.id ? null : current))}
+                    />
+                );
             })}
 
             {/* Render Connections */}
@@ -189,6 +209,22 @@ const GraphScene = () => {
                     );
                 })
             )}
+
+            {hoveredNoteId && (() => {
+                const hoveredNote = notes.find((n) => n.id === hoveredNoteId);
+                const hoveredNode = simNodes.current.get(hoveredNoteId);
+                if (!hoveredNote || !hoveredNode) return null;
+                const title = hoveredNote.title?.trim() || 'Untitled';
+                return (
+                    <Html position={[hoveredNode.position.x, hoveredNode.position.y + 0.3, hoveredNode.position.z]} center>
+                        <div className="pointer-events-none select-none bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-fg)] shadow-[3px_3px_0px_var(--color-fg)] px-2 py-1 text-[10px] font-mono whitespace-nowrap">
+                            {title}
+                        </div>
+                    </Html>
+                );
+            })()}
+
+            <OrbitControls enableZoom={true} enablePan={false} autoRotate={!hoveredNoteId} autoRotateSpeed={0.5} />
         </group>
     );
 };
@@ -200,7 +236,6 @@ export const BackgroundGraph = () => {
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
                 <GraphScene />
-                <OrbitControls enableZoom={true} enablePan={false} autoRotate={true} autoRotateSpeed={0.5} />
             </Canvas>
         </div>
     );
