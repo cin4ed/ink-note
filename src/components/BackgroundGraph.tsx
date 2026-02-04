@@ -24,11 +24,13 @@ const GraphNode = ({
     color,
     onHover,
     onUnhover,
+    onClick,
 }: {
     simNode: SimNode;
     color: string;
     onHover: () => void;
     onUnhover: () => void;
+    onClick: () => void;
 }) => {
     const groupRef = useRef<THREE.Group>(null);
 
@@ -39,7 +41,7 @@ const GraphNode = ({
     });
 
     return (
-        <group ref={groupRef} onPointerOver={onHover} onPointerOut={onUnhover}>
+        <group ref={groupRef} onPointerOver={onHover} onPointerOut={onUnhover} onClick={onClick}>
             <mesh>
                 <sphereGeometry args={[NODE_RADIUS, 32, 32]} />
                 <meshStandardMaterial color={color} />
@@ -90,6 +92,7 @@ const GraphConnection = ({ startNode, endNode, color }: { startNode: SimNode; en
 
 const GraphScene = () => {
     const notes = useStore((state) => state.notes);
+    const openNote = useStore((state) => state.openNote);
     const [fgColor, setFgColor] = useState("");
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [isFrozen, setIsFrozen] = useState(false);
@@ -264,6 +267,7 @@ const GraphScene = () => {
                                 hoverExitTimeout.current = null;
                             }, HOVER_EXIT_GRACE_MS);
                         }}
+                        onClick={() => openNote(note.id)}
                     />
                 );
             })}
@@ -297,6 +301,7 @@ const GraphScene = () => {
                     <Html position={[hoveredNode.position.x, hoveredNode.position.y + 0.3, hoveredNode.position.z]} center>
                         <div
                             className="pointer-events-auto select-none bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-fg)] shadow-[3px_3px_0px_var(--color-fg)] px-2 py-1 text-[10px] font-mono whitespace-nowrap"
+                            onClick={() => openNote(hoveredNote.id)}
                             onPointerEnter={() => {
                                 setIsPopupHovered(true);
                                 setIsFrozen(true);
