@@ -20,6 +20,15 @@ export interface Note {
     isOpen?: boolean;
 }
 
+export type GraphEdge = readonly [string, string];
+
+export interface GraphIndex {
+    notesById: Map<string, Note>;
+    outgoing: Map<string, Set<string>>;
+    undirectedNeighbors: Map<string, Set<string>>;
+    undirectedEdges: GraphEdge[];
+}
+
 export interface AppState {
     notes: Note[];
 

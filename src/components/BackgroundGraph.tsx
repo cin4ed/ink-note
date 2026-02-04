@@ -1,8 +1,9 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls, Html } from '@react-three/drei';
 import { useStore } from '../store/useStore';
+import { selectGraphIndex } from '../store/selectors';
 
 // Helper to get CSS variable value
 const getCssVar = (name: string) => {
@@ -91,8 +92,9 @@ const GraphConnection = ({ startNode, endNode, color }: { startNode: SimNode; en
 };
 
 const GraphScene = () => {
-    const notes = useStore((state) => state.notes);
+    const graphIndex = useStore(selectGraphIndex);
     const openNote = useStore((state) => state.openNote);
+    const noteIds = useMemo(() => Array.from(graphIndex.notesById.keys()), [graphIndex]);
     const [fgColor, setFgColor] = useState("");
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [isFrozen, setIsFrozen] = useState(false);
@@ -143,7 +145,7 @@ const GraphScene = () => {
 
     // Initialize or cleanup nodes based on store updates
     useEffect(() => {
-        const currentIds = new Set(notes.map(n => n.id));
+        const currentIds = new Set(noteIds);
 
         // Remove old nodes
         for (const [id] of simNodes.current) {
@@ -153,16 +155,16 @@ const GraphScene = () => {
         }
 
         // Add new nodes with random positions near center
-        notes.forEach(note => {
-            if (!simNodes.current.has(note.id)) {
-                simNodes.current.set(note.id, {
-                    id: note.id,
+        noteIds.forEach((noteId) => {
+            if (!simNodes.current.has(noteId)) {
+                simNodes.current.set(noteId, {
+                    id: noteId,
                     position: new THREE.Vector3((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5, (Math.random() - 0.5) * 2),
                     velocity: new THREE.Vector3(0, 0, 0)
                 });
             }
         });
-    }, [notes]);
+    }, [noteIds]);
 
     // Force-directed simulation step
     useFrame(() => {
@@ -195,18 +197,16 @@ const GraphScene = () => {
             });
 
             // Spring (Connections)
-            const noteData = notes.find(n => n.id === node.id);
-            if (noteData) {
-                noteData.connections.forEach(targetId => {
-                    const targetNode = simNodes.current.get(targetId);
-                    if (targetNode) {
-                        const diff = targetNode.position.clone().sub(node.position);
-                        const dist = diff.length();
-                        const springForce = (dist - springLength) * springStrength;
-                        force.add(diff.normalize().multiplyScalar(springForce));
-                    }
-                });
-            }
+            const neighbors = graphIndex.undirectedNeighbors.get(node.id);
+            neighbors?.forEach((targetId) => {
+                const targetNode = simNodes.current.get(targetId);
+                if (targetNode) {
+                    const diff = targetNode.position.clone().sub(node.position);
+                    const dist = diff.length();
+                    const springForce = (dist - springLength) * springStrength;
+                    force.add(diff.normalize().multiplyScalar(springForce));
+                }
+            });
 
             // Apply to velocity
             node.velocity.add(force.multiplyScalar(dt));
@@ -223,17 +223,17 @@ const GraphScene = () => {
     return (
         <group>
             {/* Render Nodes */}
-            {notes.map((note) => {
-                const simNode = simNodes.current.get(note.id);
+            {noteIds.map((noteId) => {
+                const simNode = simNodes.current.get(noteId);
                 if (!simNode) return null;
                 return (
                     <GraphNode
-                        key={note.id}
+                        key={noteId}
                         simNode={simNode}
                         color={fgColor}
                         onHover={() => {
                             setIsNodeHovered(true);
-                            setHoveredNoteId(note.id);
+                            setHoveredNoteId(noteId);
                             setIsFrozen(true);
                             if (hoverExitTimeout.current) {
                                 clearTimeout(hoverExitTimeout.current);
@@ -253,7 +253,7 @@ const GraphScene = () => {
                                     hoverExitTimeout.current = null;
                                     return;
                                 }
-                                setHoveredNoteId((current) => (current === note.id ? null : current));
+                                setHoveredNoteId((current) => (current === noteId ? null : current));
                                 if (hoverResumeTimeout.current) {
                                     clearTimeout(hoverResumeTimeout.current);
                                 }
@@ -267,33 +267,30 @@ const GraphScene = () => {
                                 hoverExitTimeout.current = null;
                             }, HOVER_EXIT_GRACE_MS);
                         }}
-                        onClick={() => openNote(note.id)}
+                        onClick={() => openNote(noteId)}
                     />
                 );
             })}
 
             {/* Render Connections */}
-            {notes.map(note =>
-                note.connections.map(targetId => {
-                    const startNode = simNodes.current.get(note.id);
-                    const endNode = simNodes.current.get(targetId);
+            {graphIndex.undirectedEdges.map(([startId, endId]) => {
+                const startNode = simNodes.current.get(startId);
+                const endNode = simNodes.current.get(endId);
 
-                    if (!startNode || !endNode) return null;
-                    if (note.id > targetId) return null; // Avoid duplicates
+                if (!startNode || !endNode) return null;
 
-                    return (
-                        <GraphConnection
-                            key={`${note.id}-${targetId}`}
-                            startNode={startNode}
-                            endNode={endNode}
-                            color={fgColor}
-                        />
-                    );
-                })
-            )}
+                return (
+                    <GraphConnection
+                        key={`${startId}-${endId}`}
+                        startNode={startNode}
+                        endNode={endNode}
+                        color={fgColor}
+                    />
+                );
+            })}
 
             {hoveredNoteId && (() => {
-                const hoveredNote = notes.find((n) => n.id === hoveredNoteId);
+                const hoveredNote = graphIndex.notesById.get(hoveredNoteId);
                 const hoveredNode = simNodes.current.get(hoveredNoteId);
                 if (!hoveredNote || !hoveredNode) return null;
                 const title = hoveredNote.title?.trim() || 'Untitled';
