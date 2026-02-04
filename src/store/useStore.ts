@@ -198,13 +198,28 @@ export const useStore = create<AppState>()(persist((set) => ({
         }),
 
     openNote: (id) =>
-        set((state) => ({
-            notes: state.notes.map((n) =>
-                n.id === id ? { ...n, isOpen: true } : n
-            ),
-            focusTargetId: id,
-            focusedNoteId: id,
-        })),
+        set((state) => {
+            const targetNote = state.notes.find((n) => n.id === id);
+            if (!targetNote) return state;
+
+            const shouldCenter = targetNote.isOpen === false;
+            const width = targetNote.size?.width ?? INITIAL_NOTE_WIDTH;
+            const height = targetNote.size?.height ?? INITIAL_NOTE_HEIGHT;
+            const centeredPosition = {
+                x: window.innerWidth / 2 - width / 2,
+                y: window.innerHeight / 2 - height / 2,
+            };
+
+            return {
+                notes: state.notes.map((n) =>
+                    n.id === id
+                        ? { ...n, isOpen: true, position: shouldCenter ? centeredPosition : n.position }
+                        : n
+                ),
+                focusTargetId: id,
+                focusedNoteId: id,
+            };
+        }),
 }), {
     name: 'ink-note-storage',
 }));
