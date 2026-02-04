@@ -93,9 +93,15 @@ const GraphScene = () => {
     const [fgColor, setFgColor] = useState("");
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [isFrozen, setIsFrozen] = useState(false);
+    const [isNodeHovered, setIsNodeHovered] = useState(false);
+    const [isPopupHovered, setIsPopupHovered] = useState(false);
     const hoverResumeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const hoverExitTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hoveredNoteIdRef = useRef<string | null>(null);
+    const isNodeHoveredRef = useRef(false);
+    const isPopupHoveredRef = useRef(false);
     const RESUME_DELAY_MS = 500;
+    const HOVER_EXIT_GRACE_MS = 60;
 
     // Simulation state
     const simNodes = useRef<Map<string, SimNode>>(new Map());
@@ -114,9 +120,20 @@ const GraphScene = () => {
     }, [hoveredNoteId]);
 
     useEffect(() => {
+        isNodeHoveredRef.current = isNodeHovered;
+    }, [isNodeHovered]);
+
+    useEffect(() => {
+        isPopupHoveredRef.current = isPopupHovered;
+    }, [isPopupHovered]);
+
+    useEffect(() => {
         return () => {
             if (hoverResumeTimeout.current) {
                 clearTimeout(hoverResumeTimeout.current);
+            }
+            if (hoverExitTimeout.current) {
+                clearTimeout(hoverExitTimeout.current);
             }
         };
     }, []);
@@ -212,24 +229,40 @@ const GraphScene = () => {
                         simNode={simNode}
                         color={fgColor}
                         onHover={() => {
+                            setIsNodeHovered(true);
                             setHoveredNoteId(note.id);
                             setIsFrozen(true);
+                            if (hoverExitTimeout.current) {
+                                clearTimeout(hoverExitTimeout.current);
+                                hoverExitTimeout.current = null;
+                            }
                             if (hoverResumeTimeout.current) {
                                 clearTimeout(hoverResumeTimeout.current);
                             }
                         }}
                         onUnhover={() => {
-                            setHoveredNoteId((current) => (current === note.id ? null : current));
-                            if (hoverResumeTimeout.current) {
-                                clearTimeout(hoverResumeTimeout.current);
+                            setIsNodeHovered(false);
+                            if (hoverExitTimeout.current) {
+                                clearTimeout(hoverExitTimeout.current);
                             }
-                            setIsFrozen(true);
-                            hoverResumeTimeout.current = setTimeout(() => {
-                                if (!hoveredNoteIdRef.current) {
-                                    setIsFrozen(false);
+                            hoverExitTimeout.current = setTimeout(() => {
+                                if (isPopupHoveredRef.current || isNodeHoveredRef.current) {
+                                    hoverExitTimeout.current = null;
+                                    return;
                                 }
-                                hoverResumeTimeout.current = null;
-                            }, RESUME_DELAY_MS);
+                                setHoveredNoteId((current) => (current === note.id ? null : current));
+                                if (hoverResumeTimeout.current) {
+                                    clearTimeout(hoverResumeTimeout.current);
+                                }
+                                setIsFrozen(true);
+                                hoverResumeTimeout.current = setTimeout(() => {
+                                    if (!hoveredNoteIdRef.current) {
+                                        setIsFrozen(false);
+                                    }
+                                    hoverResumeTimeout.current = null;
+                                }, RESUME_DELAY_MS);
+                                hoverExitTimeout.current = null;
+                            }, HOVER_EXIT_GRACE_MS);
                         }}
                     />
                 );
@@ -262,7 +295,37 @@ const GraphScene = () => {
                 const title = hoveredNote.title?.trim() || 'Untitled';
                 return (
                     <Html position={[hoveredNode.position.x, hoveredNode.position.y + 0.3, hoveredNode.position.z]} center>
-                        <div className="pointer-events-none select-none bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-fg)] shadow-[3px_3px_0px_var(--color-fg)] px-2 py-1 text-[10px] font-mono whitespace-nowrap">
+                        <div
+                            className="pointer-events-auto select-none bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-fg)] shadow-[3px_3px_0px_var(--color-fg)] px-2 py-1 text-[10px] font-mono whitespace-nowrap"
+                            onPointerEnter={() => {
+                                setIsPopupHovered(true);
+                                setIsFrozen(true);
+                                if (hoverExitTimeout.current) {
+                                    clearTimeout(hoverExitTimeout.current);
+                                    hoverExitTimeout.current = null;
+                                }
+                                if (hoverResumeTimeout.current) {
+                                    clearTimeout(hoverResumeTimeout.current);
+                                }
+                            }}
+                            onPointerLeave={() => {
+                                setIsPopupHovered(false);
+                                if (isNodeHoveredRef.current) {
+                                    return;
+                                }
+                                setHoveredNoteId(null);
+                                if (hoverResumeTimeout.current) {
+                                    clearTimeout(hoverResumeTimeout.current);
+                                }
+                                setIsFrozen(true);
+                                hoverResumeTimeout.current = setTimeout(() => {
+                                    if (!hoveredNoteIdRef.current) {
+                                        setIsFrozen(false);
+                                    }
+                                    hoverResumeTimeout.current = null;
+                                }, RESUME_DELAY_MS);
+                            }}
+                        >
                             {title}
                         </div>
                     </Html>
