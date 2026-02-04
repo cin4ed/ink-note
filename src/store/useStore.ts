@@ -216,7 +216,6 @@ export const useStore = create<AppState>()(persist((set) => ({
                         ? { ...n, isOpen: true, position: shouldCenter ? centeredPosition : n.position }
                         : n
                 ),
-                focusTargetId: id,
                 focusedNoteId: id,
             };
         }),
