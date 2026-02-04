@@ -6,6 +6,8 @@ import { useStore } from './store/useStore';
 
 function App() {
   const addNote = useStore((state) => state.addNote);
+  const closeNote = useStore((state) => state.closeNote);
+  const focusedNoteId = useStore((state) => state.focusedNoteId);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -20,11 +22,17 @@ function App() {
         e.preventDefault();
         setIsSearchOpen(true);
       }
+      // CMD/CTRL + W: Close Focused Note
+      if ((e.metaKey || e.ctrlKey) && e.key === 'w') {
+        if (!focusedNoteId) return;
+        e.preventDefault();
+        closeNote(focusedNoteId);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [addNote]);
+  }, [addNote, closeNote, focusedNoteId]);
 
   return (
     <main className="w-screen h-screen bg-[var(--color-bg)] text-[var(--color-fg)] transition-colors duration-300">

@@ -36,7 +36,8 @@ export const useStore = create<AppState>()(persist((set) => ({
             };
             return {
                 notes: [...state.notes, newNote],
-                focusTargetId: id
+                focusTargetId: id,
+                focusedNoteId: id
             };
         }),
 
@@ -113,6 +114,8 @@ export const useStore = create<AppState>()(persist((set) => ({
 
     focusTargetId: null,
     setFocusTarget: (id) => set({ focusTargetId: id }),
+    focusedNoteId: null,
+    setFocusedNote: (id) => set({ focusedNoteId: id }),
 
     changeNoteId: (oldId, newId) =>
         set((state) => {
@@ -168,21 +171,29 @@ export const useStore = create<AppState>()(persist((set) => ({
 
             // If the note has the default title, delete it permanently
             if (note.title === 'New Note') {
-                return {
-                    notes: state.notes
+                const remainingNotes = state.notes
                         .filter((n) => n.id !== id)
                         .map((n) => ({
                             ...n,
                             connections: n.connections.filter((connId) => connId !== id),
-                        })),
+                        }));
+                const openNotes = remainingNotes.filter((n) => n.isOpen !== false);
+                const nextFocusedNoteId = openNotes.length > 0 ? openNotes[openNotes.length - 1].id : null;
+                return {
+                    notes: remainingNotes,
+                    focusedNoteId: state.focusedNoteId === id ? nextFocusedNoteId : state.focusedNoteId,
                 };
             }
 
             // Otherwise, just hide it (soft delete / close)
+            const updatedNotes = state.notes.map((n) =>
+                n.id === id ? { ...n, isOpen: false } : n
+            );
+            const openNotes = updatedNotes.filter((n) => n.isOpen !== false);
+            const nextFocusedNoteId = openNotes.length > 0 ? openNotes[openNotes.length - 1].id : null;
             return {
-                notes: state.notes.map((n) =>
-                    n.id === id ? { ...n, isOpen: false } : n
-                ),
+                notes: updatedNotes,
+                focusedNoteId: state.focusedNoteId === id ? nextFocusedNoteId : state.focusedNoteId,
             };
         }),
 
@@ -192,6 +203,7 @@ export const useStore = create<AppState>()(persist((set) => ({
                 n.id === id ? { ...n, isOpen: true } : n
             ),
             focusTargetId: id,
+            focusedNoteId: id,
         })),
 }), {
     name: 'ink-note-storage',

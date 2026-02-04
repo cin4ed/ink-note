@@ -16,6 +16,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     const changeNoteId = useStore((state) => state.changeNoteId);
     const focusTargetId = useStore((state) => state.focusTargetId);
     const setFocusTarget = useStore((state) => state.setFocusTarget);
+    const setFocusedNote = useStore((state) => state.setFocusedNote);
 
     const nodeRef = useRef(null);
     const contentRef = useRef<NoteEditorHandle>(null);
@@ -94,6 +95,8 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
         >
             <div
                 ref={nodeRef}
+                onMouseDown={() => setFocusedNote(note.id)}
+                onFocusCapture={() => setFocusedNote(note.id)}
                 className="pointer-events-auto absolute bg-[var(--color-bg)] border border-[var(--color-fg)] shadow-[4px_4px_0px_var(--color-fg)] flex flex-col overflow-hidden"
                 style={{
                     width: note.size?.width ?? 300,

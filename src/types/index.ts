@@ -30,6 +30,8 @@ export interface AppState {
     // ID update & Focus management
     focusTargetId: string | null;
     setFocusTarget: (id: string | null) => void;
+    focusedNoteId: string | null;
+    setFocusedNote: (id: string | null) => void;
     changeNoteId: (oldId: string, newId: string) => void;
     closeNote: (id: string) => void;
     openNote: (id: string) => void;

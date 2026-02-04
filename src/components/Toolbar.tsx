@@ -15,6 +15,10 @@ export const Toolbar = () => {
                     <span className="bg-[var(--color-fg)] text-[var(--color-bg)] px-1 rounded text-xs px-1">⌘P</span>
                     <span>Search</span>
                 </div>
+                <div className="flex items-center gap-2">
+                    <span className="bg-[var(--color-fg)] text-[var(--color-bg)] px-1 rounded text-xs px-1">⌘W</span>
+                    <span>Close Note</span>
+                </div>
             </div>
         </div>
     );
