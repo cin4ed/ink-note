@@ -277,7 +277,7 @@ const GraphScene = () => {
 export const BackgroundGraph = () => {
     return (
         <div className="fixed inset-0 z-0 pointer-events-auto">
-            <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
+            <Canvas camera={{ position: [0, 0, 30], fov: 60 }}>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
                 <GraphScene />
