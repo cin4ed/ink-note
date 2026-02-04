@@ -17,7 +17,7 @@ interface SimNode {
 }
 
 const NODE_RADIUS = 0.15;
-const HIT_RADIUS = 0.45;
+const HIT_RADIUS = 0.55;
 
 const GraphNode = ({
     simNode,
@@ -151,7 +151,7 @@ const GraphScene = () => {
         const repulsion = 0.5;
         const springLength = 3;
         const springStrength = 0.1;
-        const centerGravity = 0.01;
+        const centerGravity = 0.08;
         const damping = 0.9;
         const maxSpeed = 0.6;
         const dt = 0.1; // Fixed time step for stability
