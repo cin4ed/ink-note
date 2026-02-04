@@ -16,6 +16,9 @@ interface SimNode {
     velocity: THREE.Vector3;
 }
 
+const NODE_RADIUS = 0.15;
+const HIT_RADIUS = 0.45;
+
 const GraphNode = ({
     simNode,
     color,
@@ -27,19 +30,25 @@ const GraphNode = ({
     onHover: () => void;
     onUnhover: () => void;
 }) => {
-    const meshRef = useRef<THREE.Mesh>(null);
+    const groupRef = useRef<THREE.Group>(null);
 
     useFrame(() => {
-        if (meshRef.current) {
-            meshRef.current.position.copy(simNode.position);
+        if (groupRef.current) {
+            groupRef.current.position.copy(simNode.position);
         }
     });
 
     return (
-        <mesh ref={meshRef} onPointerOver={onHover} onPointerOut={onUnhover}>
-            <sphereGeometry args={[0.15, 32, 32]} />
-            <meshStandardMaterial color={color} />
-        </mesh>
+        <group ref={groupRef} onPointerOver={onHover} onPointerOut={onUnhover}>
+            <mesh>
+                <sphereGeometry args={[NODE_RADIUS, 32, 32]} />
+                <meshStandardMaterial color={color} />
+            </mesh>
+            <mesh>
+                <sphereGeometry args={[HIT_RADIUS, 16, 16]} />
+                <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+            </mesh>
+        </group>
     );
 };
 
@@ -83,6 +92,10 @@ const GraphScene = () => {
     const notes = useStore((state) => state.notes);
     const [fgColor, setFgColor] = useState("");
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
+    const [isFrozen, setIsFrozen] = useState(false);
+    const hoverResumeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const hoveredNoteIdRef = useRef<string | null>(null);
+    const RESUME_DELAY_MS = 500;
 
     // Simulation state
     const simNodes = useRef<Map<string, SimNode>>(new Map());
@@ -94,6 +107,18 @@ const GraphScene = () => {
         updateColor();
         window.addEventListener('ink-theme-change', updateColor);
         return () => window.removeEventListener('ink-theme-change', updateColor);
+    }, []);
+
+    useEffect(() => {
+        hoveredNoteIdRef.current = hoveredNoteId;
+    }, [hoveredNoteId]);
+
+    useEffect(() => {
+        return () => {
+            if (hoverResumeTimeout.current) {
+                clearTimeout(hoverResumeTimeout.current);
+            }
+        };
     }, []);
 
     // Initialize or cleanup nodes based on store updates
@@ -121,13 +146,14 @@ const GraphScene = () => {
 
     // Force-directed simulation step
     useFrame(() => {
-        if (hoveredNoteId) return;
+        if (isFrozen) return;
         const nodes = Array.from(simNodes.current.values());
         const repulsion = 0.5;
         const springLength = 3;
         const springStrength = 0.1;
         const centerGravity = 0.01;
         const damping = 0.9;
+        const maxSpeed = 0.6;
         const dt = 0.1; // Fixed time step for stability
 
         // 1. Apply Forces
@@ -165,6 +191,7 @@ const GraphScene = () => {
             // Apply to velocity
             node.velocity.add(force.multiplyScalar(dt));
             node.velocity.multiplyScalar(damping);
+            node.velocity.clampLength(0, maxSpeed);
         });
 
         // 2. Update Positions
@@ -184,8 +211,26 @@ const GraphScene = () => {
                         key={note.id}
                         simNode={simNode}
                         color={fgColor}
-                        onHover={() => setHoveredNoteId(note.id)}
-                        onUnhover={() => setHoveredNoteId((current) => (current === note.id ? null : current))}
+                        onHover={() => {
+                            setHoveredNoteId(note.id);
+                            setIsFrozen(true);
+                            if (hoverResumeTimeout.current) {
+                                clearTimeout(hoverResumeTimeout.current);
+                            }
+                        }}
+                        onUnhover={() => {
+                            setHoveredNoteId((current) => (current === note.id ? null : current));
+                            if (hoverResumeTimeout.current) {
+                                clearTimeout(hoverResumeTimeout.current);
+                            }
+                            setIsFrozen(true);
+                            hoverResumeTimeout.current = setTimeout(() => {
+                                if (!hoveredNoteIdRef.current) {
+                                    setIsFrozen(false);
+                                }
+                                hoverResumeTimeout.current = null;
+                            }, RESUME_DELAY_MS);
+                        }}
                     />
                 );
             })}
@@ -224,7 +269,7 @@ const GraphScene = () => {
                 );
             })()}
 
-            <OrbitControls enableZoom={true} enablePan={false} autoRotate={!hoveredNoteId} autoRotateSpeed={0.5} />
+            <OrbitControls enableZoom={true} enablePan={false} autoRotate={!isFrozen} autoRotateSpeed={0.5} />
         </group>
     );
 };
