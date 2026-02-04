@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { WindowManager } from './components/WindowManager';
 import { Toolbar } from './components/Toolbar';
 import { SearchPanel } from './components/SearchPanel';
+import { RecentNotes } from './components/RecentNotes';
 import { useStore } from './store/useStore';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
   return (
     <main className="w-screen h-screen bg-[var(--color-bg)] text-[var(--color-fg)] transition-colors duration-300">
       <Toolbar />
+      <RecentNotes />
       <WindowManager />
       <SearchPanel isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </main>

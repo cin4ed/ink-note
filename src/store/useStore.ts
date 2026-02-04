@@ -12,6 +12,8 @@ export const useStore = create<AppState>()(persist((set) => ({
             id: 'welcome-note',
             title: 'Welcome to ink-note',
             content: 'This is a minimalistic, node-based note taking app.\n\nDrag this window around!',
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
             position: { x: 100, y: 100 },
             size: { width: INITIAL_NOTE_WIDTH, height: INITIAL_NOTE_HEIGHT },
             connections: [],
@@ -22,10 +24,13 @@ export const useStore = create<AppState>()(persist((set) => ({
     addNote: (position) =>
         set((state) => {
             const id = uuidv4();
+            const now = Date.now();
             const newNote: Note = {
                 id,
                 title: 'New Note',
                 content: '',
+                createdAt: now,
+                updatedAt: now,
                 position: position || {
                     x: window.innerWidth / 2 - INITIAL_NOTE_WIDTH / 2 + (Math.random() * 50 - 25),
                     y: window.innerHeight / 2 - INITIAL_NOTE_HEIGHT / 2 + (Math.random() * 50 - 25)
@@ -46,7 +51,12 @@ export const useStore = create<AppState>()(persist((set) => ({
             notes: state.notes.map((note) => {
                 if (note.id !== id) return note;
 
-                const updatedNote = { ...note, ...updates };
+                const shouldUpdateTimestamp = updates.content !== undefined || updates.title !== undefined;
+                const updatedNote: Note = {
+                    ...note,
+                    ...updates,
+                    ...(shouldUpdateTimestamp ? { updatedAt: Date.now() } : {}),
+                };
 
                 // Parse content for connections if content was updated
                 if (updates.content !== undefined) {
@@ -123,15 +133,18 @@ export const useStore = create<AppState>()(persist((set) => ({
                 console.warn(`Note ID collision: ${newId} already exists.`);
                 return state;
             }
+            const now = Date.now();
 
             return {
                 focusTargetId: newId, // Trigger focus on the new ID
                 notes: state.notes.map((note) => {
                     let updatedNote = note;
+                    let didUpdate = false;
 
                     // Update ID of the target note
                     if (note.id === oldId) {
-                        updatedNote = { ...note, id: newId };
+                        updatedNote = { ...note, id: newId, updatedAt: now };
+                        didUpdate = true;
                     }
 
                     // Update references in connections for other notes
@@ -142,6 +155,7 @@ export const useStore = create<AppState>()(persist((set) => ({
                                 connId === oldId ? newId : connId
                             ),
                         };
+                        didUpdate = true;
                     }
 
                     if (updatedNote.content.includes(`data-id="${oldId}"`)) {
@@ -157,6 +171,11 @@ export const useStore = create<AppState>()(persist((set) => ({
                         });
 
                         updatedNote = { ...updatedNote, content: newContentWithLabel };
+                        didUpdate = true;
+                    }
+
+                    if (didUpdate && updatedNote.updatedAt !== now) {
+                        updatedNote = { ...updatedNote, updatedAt: now };
                     }
 
                     return updatedNote;
@@ -221,4 +240,17 @@ export const useStore = create<AppState>()(persist((set) => ({
         }),
 }), {
     name: 'ink-note-storage',
+    version: 1,
+    migrate: (persistedState: any) => {
+        if (!persistedState || !persistedState.notes) return persistedState;
+        const now = Date.now();
+        return {
+            ...persistedState,
+            notes: persistedState.notes.map((note: any) => {
+                const createdAt = typeof note.createdAt === 'number' ? note.createdAt : now;
+                const updatedAt = typeof note.updatedAt === 'number' ? note.updatedAt : createdAt;
+                return { ...note, createdAt, updatedAt };
+            }),
+        };
+    },
 }));
