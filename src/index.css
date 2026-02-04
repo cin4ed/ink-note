@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* --color-bg: #18181A;
-  --color-fg: #DDE0DF; */
+  /* Light Theme */
   --color-bg: #DDE0DF;
   --color-fg: #16151D;
 }
@@ -11,6 +10,13 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  --color-bg: #DDE0DF;
+  --color-fg: #16151D;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #18181A;
+  --color-fg: #DDE0DF;
 }
 
 body {

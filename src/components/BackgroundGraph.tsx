@@ -77,7 +77,12 @@ const GraphScene = () => {
     const simNodes = useRef<Map<string, SimNode>>(new Map());
 
     useEffect(() => {
-        setFgColor(getCssVar('--color-fg') || 'black');
+        const updateColor = () => {
+            setFgColor(getCssVar('--color-fg') || 'black');
+        };
+        updateColor();
+        window.addEventListener('ink-theme-change', updateColor);
+        return () => window.removeEventListener('ink-theme-change', updateColor);
     }, []);
 
     // Initialize or cleanup nodes based on store updates
