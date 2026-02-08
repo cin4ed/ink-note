@@ -80,7 +80,7 @@ function App() {
   }, []);
 
   return (
-    <main className="w-screen h-screen bg-[var(--color-bg)] text-[var(--color-fg)] transition-colors duration-300">
+    <main className="w-screen h-screen bg-[var(--color-bg)] text-[var(--color-fg)] transition-colors duration-300 antialiased">
       <AuthLoading>
         <section className="grid h-full w-full place-items-center font-mono text-xs uppercase tracking-[0.03em] opacity-70">
           Loading authentication...

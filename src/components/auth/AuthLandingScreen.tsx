@@ -11,11 +11,11 @@ export const AuthLandingScreen = () => {
         <div className="flex min-h-0 flex-col gap-4">
           <div>
             <h1
-              className={`m-0 text-[clamp(1.6rem,2.5vw,2.2rem)] tracking-[-0.04em]`}
+              className={`m-0 text-[5rem] tracking-[-0.04em] geist-pixel-line text-box-trim`}
             >
               ink-note
             </h1>
-            <p className="mt-[0.35rem] max-w-[60ch] text-[0.9rem] leading-[1.45] opacity-80">
+            <p className="mt-[0.35rem] max-w-[60ch] text-[0.9rem] leading-[1.45] opacity-80 geist-pixel-square">
               Explore how notes connect before signing in. Drag and click the
               graph to preview how Ink Note links ideas together.
             </p>

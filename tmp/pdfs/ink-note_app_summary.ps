@@ -1,0 +1,78 @@
+%!PS-Adobe-3.0
+%%Pages: 1
+%%BoundingBox: 0 0 612 792
+%%Page: 1 1
+
+/left 48 def
+/y 744 def
+
+/normalFont { /Helvetica findfont 10 scalefont setfont } def
+/headFont { /Helvetica-Bold findfont 17 scalefont setfont } def
+/sectionFont { /Helvetica-Bold findfont 12 scalefont setfont } def
+
+/line {
+  /txt exch def
+  left y moveto txt show
+  /y y 13 sub def
+} def
+
+/section {
+  /txt exch def
+  sectionFont
+  left y moveto txt show
+  /y y 16 sub def
+  normalFont
+} def
+
+/bullet {
+  /txt exch def
+  left 10 add y moveto (- ) show
+  txt show
+  /y y 12 sub def
+} def
+
+headFont
+left y moveto (Ink Note - One-Page App Summary) show
+/y y 24 sub def
+normalFont
+
+(What it is) section
+(Ink Note is a React + Vite note workspace with draggable note windows.) line
+(Notes can reference each other to form a graph, and workspace access is auth-gated with Clerk.) line
+/y y 6 sub def
+
+(Who it is for) section
+(Primary persona: Not found in repo.) line
+(Inferred from UI copy: users who link ideas and navigate notes visually.) line
+/y y 6 sub def
+
+(What it does) section
+(Create draggable and resizable note windows on a full-screen canvas.) bullet
+(Edit rich-text note content and rename notes with slug-style IDs.) bullet
+(Link notes with at-mentions; links are stored as note-to-note connections.) bullet
+(Show a live background graph of note relationships; click nodes to open notes.) bullet
+(Search notes by title with a command-style panel and keyboard navigation.) bullet
+(Show a recent-notes rail for one-click reopen and context recovery.) bullet
+(Provide auth, account controls, and a light or dark theme toggle.) bullet
+/y y 6 sub def
+
+(How it works - architecture from repo evidence) section
+(React app mounts in src/main.tsx with ClerkProvider and ConvexProviderWithClerk.) line
+(App.tsx gates UI by auth state: AuthLandingScreen when signed out, WorkspaceShell when signed in.) line
+(State lives in a persisted Zustand store in src/store/useStore.ts, including notes and window state.) line
+(The persist key is ink-note-storage, and theme preference is saved in localStorage.) line
+(NoteEditor with TipTap and Mention updates HTML content.) line
+(updateNote parses data-id spans into connections for graph edges.) line
+(selectGraphIndex and buildGraphIndex derive adjacency maps.) line
+(BackgroundGraph renders nodes and edges with react-three-fiber and opens notes via store actions.) line
+(Convex app-specific functions or schema definitions: Not found in repo.) line
+/y y 6 sub def
+
+(How to run - minimal getting started) section
+(1. Install dependencies: pnpm install) line
+(2. Set .env.local values used by code: VITE_CONVEX_URL and VITE_CLERK_PUBLISHABLE_KEY.) line
+(3. Start the app: pnpm dev) line
+(4. If running your own Convex auth setup, configure CLERK_JWT_ISSUER_DOMAIN for convex/auth.config.ts.) line
+
+showpage
+%%EOF

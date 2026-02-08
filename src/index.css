@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Geist Pixel Circle";
+  src: url("/fonts/GeistPixel-Circle.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Pixel Grid";
+  src: url("/fonts/GeistPixel-Grid.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Pixel Line";
+  src: url("/fonts/GeistPixel-Line.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Pixel Square";
+  src: url("/fonts/GeistPixel-Square.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Pixel Triangle";
+  src: url("/fonts/GeistPixel-Triangle.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* Light Theme */
   --color-bg: #DDE0DF;
@@ -7,7 +47,7 @@
 }
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Geist Pixel Square", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   --color-bg: #DDE0DF;
@@ -195,4 +235,24 @@ body {
 
 .geist-pixel-square {
   font-family: "Geist Pixel Square", sans-serif;
+}
+
+.geist-pixel-circle {
+  font-family: "Geist Pixel Circle", sans-serif;
+}
+
+.geist-pixel-grid {
+  font-family: "Geist Pixel Grid", sans-serif;
+}
+
+.geist-pixel-line {
+  font-family: "Geist Pixel Line", sans-serif;
+}
+
+.geist-pixel-triangle {
+  font-family: "Geist Pixel Triangle", sans-serif;
+}
+
+.text-box-trim {
+  text-box: trim-both cap alphabetic;
 }
