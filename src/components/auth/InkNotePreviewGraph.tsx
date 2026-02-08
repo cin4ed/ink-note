@@ -1,6 +1,10 @@
-import { OrbitControls } from "@react-three/drei";
+import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Draggable, {
+  type DraggableData,
+  type DraggableEvent,
+} from "react-draggable";
 import * as THREE from "three";
 import { previewEdges, previewNodes } from "./previewGraphData";
 
@@ -10,6 +14,13 @@ interface SimNode {
   snippet: string;
   position: THREE.Vector3;
   velocity: THREE.Vector3;
+}
+
+interface OpenPreviewNote {
+  id: string;
+  x: number;
+  y: number;
+  z: number;
 }
 
 interface GraphNodeProps {
@@ -27,15 +38,20 @@ interface GraphEdgeProps {
   color: string;
 }
 
-const NODE_RADIUS = 0.16;
-const HIT_RADIUS = 0.54;
+const NODE_RADIUS = 0.15;
+const HIT_RADIUS = 0.55;
+
+const NOTE_WINDOW_WIDTH = 280;
+const NOTE_WINDOW_HEIGHT = 178;
+const NOTE_WINDOW_MARGIN = 12;
+const NOTE_WINDOW_OFFSET_STEP = 26;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
 const getCssVar = (name: string) => {
   if (typeof window === "undefined") return "#16151D";
-  return (
-    getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
-    "#16151D"
-  );
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#16151D";
 };
 
 const GraphNode = ({
@@ -52,11 +68,7 @@ const GraphNode = ({
     if (!groupRef.current) return;
     groupRef.current.position.copy(simNode.position);
     const targetScale = isActive ? 1.35 : 1;
-    const nextScale = THREE.MathUtils.lerp(
-      groupRef.current.scale.x,
-      targetScale,
-      0.24,
-    );
+    const nextScale = THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.24);
     groupRef.current.scale.setScalar(nextScale);
   });
 
@@ -93,8 +105,7 @@ const GraphEdge = ({ startNode, endNode, color }: GraphEdgeProps) => {
 
   useFrame(() => {
     if (!geometryRef.current) return;
-    const attribute = geometryRef.current.attributes
-      .position as THREE.BufferAttribute;
+    const attribute = geometryRef.current.attributes.position as THREE.BufferAttribute;
     attribute.array[0] = startNode.position.x;
     attribute.array[1] = startNode.position.y;
     attribute.array[2] = startNode.position.z;
@@ -122,16 +133,16 @@ const GraphEdge = ({ startNode, endNode, color }: GraphEdgeProps) => {
 
 const PreviewGraphScene = ({
   hoveredId,
-  selectedId,
+  selectedIds,
   onHover,
   onUnhover,
-  onSelect,
+  onOpenNote,
 }: {
   hoveredId: string | null;
-  selectedId: string | null;
+  selectedIds: Set<string>;
   onHover: (id: string) => void;
   onUnhover: (id: string) => void;
-  onSelect: (id: string) => void;
+  onOpenNote: (id: string) => void;
 }) => {
   const [fgColor, setFgColor] = useState("");
 
@@ -168,9 +179,7 @@ const PreviewGraphScene = ({
           };
         })
         .filter(
-          (
-            edge,
-          ): edge is { key: string; startNode: SimNode; endNode: SimNode } =>
+          (edge): edge is { key: string; startNode: SimNode; endNode: SimNode } =>
             edge !== null,
         ),
     [nodeById],
@@ -209,9 +218,7 @@ const PreviewGraphScene = ({
         const diff = node.position.clone().sub(other.position);
         const distSq = diff.lengthSq();
         if (distSq > 0) {
-          force.add(
-            diff.normalize().multiplyScalar(repulsion / Math.sqrt(distSq)),
-          );
+          force.add(diff.normalize().multiplyScalar(repulsion / Math.sqrt(distSq)));
         }
       }
 
@@ -241,6 +248,8 @@ const PreviewGraphScene = ({
     }
   });
 
+  const hoveredNode = hoveredId ? nodeById.get(hoveredId) ?? null : null;
+
   return (
     <group>
       {edgeNodes.map((edge) => (
@@ -257,12 +266,27 @@ const PreviewGraphScene = ({
           key={node.id}
           simNode={node}
           color={fgColor}
-          isActive={node.id === hoveredId || node.id === selectedId}
+          isActive={node.id === hoveredId || selectedIds.has(node.id)}
           onHover={() => onHover(node.id)}
           onUnhover={() => onUnhover(node.id)}
-          onClick={() => onSelect(node.id)}
+          onClick={() => onOpenNote(node.id)}
         />
       ))}
+
+      {hoveredNode && (
+        <Html
+          position={[
+            hoveredNode.position.x,
+            hoveredNode.position.y + 0.35,
+            hoveredNode.position.z,
+          ]}
+          center
+        >
+          <div className="pointer-events-none select-none bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-fg)] shadow-[3px_3px_0px_var(--color-fg)] px-2 py-1 text-[10px] font-mono whitespace-nowrap">
+            {hoveredNode.title}
+          </div>
+        </Html>
+      )}
 
       <OrbitControls
         enableZoom
@@ -274,21 +298,171 @@ const PreviewGraphScene = ({
   );
 };
 
+const PreviewNoteWindow = ({
+  note,
+  data,
+  onDrag,
+  onBringToFront,
+  onClose,
+}: {
+  note: { id: string; title: string; snippet: string };
+  data: OpenPreviewNote;
+  onDrag: (id: string, x: number, y: number) => void;
+  onBringToFront: (id: string) => void;
+  onClose: (id: string) => void;
+}) => {
+  const nodeRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <Draggable
+      nodeRef={nodeRef}
+      position={{ x: data.x, y: data.y }}
+      bounds="parent"
+      handle=".preview-note-window-header"
+      cancel=".preview-note-window-close"
+      onStart={() => {
+        onBringToFront(data.id);
+      }}
+      onDrag={(_event: DraggableEvent, dragData: DraggableData) => {
+        onDrag(data.id, dragData.x, dragData.y);
+      }}
+    >
+      <article
+        ref={nodeRef}
+        className="preview-note-window"
+        style={{ zIndex: data.z }}
+        onMouseDown={() => onBringToFront(data.id)}
+        aria-label={`Preview note ${note.title}`}
+      >
+        <header className="preview-note-window-header">
+          <h3>{note.title}</h3>
+          <button
+            type="button"
+            className="preview-note-window-close"
+            onClick={() => onClose(data.id)}
+            aria-label="Close note"
+          >
+            ×
+          </button>
+        </header>
+        <p>{note.snippet}</p>
+      </article>
+    </Draggable>
+  );
+};
+
 export const InkNotePreviewGraph = () => {
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const zCounterRef = useRef(5);
+
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [openNotes, setOpenNotes] = useState<OpenPreviewNote[]>([]);
+  const [surfaceSize, setSurfaceSize] = useState({ width: 0, height: 0 });
 
   const nodeById = useMemo(
     () => new Map(previewNodes.map((node) => [node.id, node])),
     [],
   );
 
-  const activeId = hoveredId ?? selectedId;
-  const activeNode = activeId ? (nodeById.get(activeId) ?? null) : null;
+  const selectedIds = useMemo(
+    () => new Set(openNotes.map((note) => note.id)),
+    [openNotes],
+  );
+
+  useEffect(() => {
+    const element = surfaceRef.current;
+    if (!element) return;
+
+    const syncSize = () => {
+      const rect = element.getBoundingClientRect();
+      setSurfaceSize({
+        width: Math.max(0, rect.width),
+        height: Math.max(0, rect.height),
+      });
+    };
+
+    syncSize();
+    const observer = new ResizeObserver(syncSize);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const nextZIndex = useCallback(() => {
+    zCounterRef.current += 1;
+    return zCounterRef.current;
+  }, []);
+
+  const clampWindowPosition = useCallback(
+    (x: number, y: number) => {
+      const maxX = Math.max(
+        NOTE_WINDOW_MARGIN,
+        surfaceSize.width - NOTE_WINDOW_WIDTH - NOTE_WINDOW_MARGIN,
+      );
+      const maxY = Math.max(
+        NOTE_WINDOW_MARGIN,
+        surfaceSize.height - NOTE_WINDOW_HEIGHT - NOTE_WINDOW_MARGIN,
+      );
+
+      return {
+        x: clamp(x, NOTE_WINDOW_MARGIN, maxX),
+        y: clamp(y, NOTE_WINDOW_MARGIN, maxY),
+      };
+    },
+    [surfaceSize.height, surfaceSize.width],
+  );
+
+  const bringToFront = useCallback(
+    (id: string) => {
+      const nextZ = nextZIndex();
+      setOpenNotes((current) =>
+        current.map((item) => (item.id === id ? { ...item, z: nextZ } : item)),
+      );
+    },
+    [nextZIndex],
+  );
+
+  const openNote = useCallback(
+    (id: string) => {
+      setOpenNotes((current) => {
+        const existing = current.find((item) => item.id === id);
+        const nextZ = nextZIndex();
+
+        if (existing) {
+          return current.map((item) =>
+            item.id === id ? { ...item, z: nextZ } : item,
+          );
+        }
+
+        const offset = current.length * NOTE_WINDOW_OFFSET_STEP;
+        const baseX = surfaceSize.width - NOTE_WINDOW_WIDTH - NOTE_WINDOW_MARGIN - offset;
+        const baseY = NOTE_WINDOW_MARGIN + offset;
+        const position = clampWindowPosition(baseX, baseY);
+
+        return [...current, { id, x: position.x, y: position.y, z: nextZ }];
+      });
+    },
+    [clampWindowPosition, nextZIndex, surfaceSize.width],
+  );
+
+  const moveNote = useCallback(
+    (id: string, x: number, y: number) => {
+      const nextPos = clampWindowPosition(x, y);
+      setOpenNotes((current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, x: nextPos.x, y: nextPos.y } : item,
+        ),
+      );
+    },
+    [clampWindowPosition],
+  );
+
+  const closeNote = useCallback((id: string) => {
+    setOpenNotes((current) => current.filter((item) => item.id !== id));
+  }, []);
 
   return (
     <div className="preview-graph-container">
-      <div className="preview-graph-surface">
+      <div ref={surfaceRef} className="preview-graph-surface">
         <Canvas
           camera={{ position: [0, 0, 15], fov: 58 }}
           gl={{ alpha: true, antialias: true }}
@@ -300,21 +474,30 @@ export const InkNotePreviewGraph = () => {
           <pointLight position={[10, 10, 10]} intensity={1.2} />
           <PreviewGraphScene
             hoveredId={hoveredId}
-            selectedId={selectedId}
+            selectedIds={selectedIds}
             onHover={(id) => setHoveredId(id)}
             onUnhover={(id) =>
               setHoveredId((current) => (current === id ? null : current))
             }
-            onSelect={(id) => setSelectedId(id)}
+            onOpenNote={openNote}
           />
         </Canvas>
 
-        {activeNode && (
-          <div className="preview-graph-note-card">
-            <div className="preview-graph-note-title">{activeNode.title}</div>
-            <p>{activeNode.snippet}</p>
-          </div>
-        )}
+        {openNotes.map((openNoteData) => {
+          const note = nodeById.get(openNoteData.id);
+          if (!note) return null;
+
+          return (
+            <PreviewNoteWindow
+              key={openNoteData.id}
+              note={note}
+              data={openNoteData}
+              onDrag={moveNote}
+              onBringToFront={bringToFront}
+              onClose={closeNote}
+            />
+          );
+        })}
       </div>
     </div>
   );
