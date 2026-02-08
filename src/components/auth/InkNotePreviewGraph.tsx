@@ -29,7 +29,7 @@ interface GraphNodeProps {
   isActive: boolean;
   onHover: () => void;
   onUnhover: () => void;
-  onClick: () => void;
+  onOpen: () => void;
 }
 
 interface GraphEdgeProps {
@@ -51,7 +51,10 @@ const clamp = (value: number, min: number, max: number) =>
 
 const getCssVar = (name: string) => {
   if (typeof window === "undefined") return "#16151D";
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#16151D";
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+    "#16151D"
+  );
 };
 
 const GraphNode = ({
@@ -60,7 +63,7 @@ const GraphNode = ({
   isActive,
   onHover,
   onUnhover,
-  onClick,
+  onOpen,
 }: GraphNodeProps) => {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -68,7 +71,11 @@ const GraphNode = ({
     if (!groupRef.current) return;
     groupRef.current.position.copy(simNode.position);
     const targetScale = isActive ? 1.35 : 1;
-    const nextScale = THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.24);
+    const nextScale = THREE.MathUtils.lerp(
+      groupRef.current.scale.x,
+      targetScale,
+      0.24,
+    );
     groupRef.current.scale.setScalar(nextScale);
   });
 
@@ -83,9 +90,16 @@ const GraphNode = ({
         event.stopPropagation();
         onUnhover();
       }}
+      onPointerDown={(event) => {
+        event.stopPropagation();
+        onOpen();
+      }}
+      onPointerUp={(event) => {
+        event.stopPropagation();
+      }}
       onClick={(event) => {
         event.stopPropagation();
-        onClick();
+        onOpen();
       }}
     >
       <mesh>
@@ -105,7 +119,8 @@ const GraphEdge = ({ startNode, endNode, color }: GraphEdgeProps) => {
 
   useFrame(() => {
     if (!geometryRef.current) return;
-    const attribute = geometryRef.current.attributes.position as THREE.BufferAttribute;
+    const attribute = geometryRef.current.attributes
+      .position as THREE.BufferAttribute;
     attribute.array[0] = startNode.position.x;
     attribute.array[1] = startNode.position.y;
     attribute.array[2] = startNode.position.z;
@@ -179,7 +194,9 @@ const PreviewGraphScene = ({
           };
         })
         .filter(
-          (edge): edge is { key: string; startNode: SimNode; endNode: SimNode } =>
+          (
+            edge,
+          ): edge is { key: string; startNode: SimNode; endNode: SimNode } =>
             edge !== null,
         ),
     [nodeById],
@@ -218,7 +235,9 @@ const PreviewGraphScene = ({
         const diff = node.position.clone().sub(other.position);
         const distSq = diff.lengthSq();
         if (distSq > 0) {
-          force.add(diff.normalize().multiplyScalar(repulsion / Math.sqrt(distSq)));
+          force.add(
+            diff.normalize().multiplyScalar(repulsion / Math.sqrt(distSq)),
+          );
         }
       }
 
@@ -248,7 +267,7 @@ const PreviewGraphScene = ({
     }
   });
 
-  const hoveredNode = hoveredId ? nodeById.get(hoveredId) ?? null : null;
+  const hoveredNode = hoveredId ? (nodeById.get(hoveredId) ?? null) : null;
 
   return (
     <group>
@@ -269,7 +288,7 @@ const PreviewGraphScene = ({
           isActive={node.id === hoveredId || selectedIds.has(node.id)}
           onHover={() => onHover(node.id)}
           onUnhover={() => onUnhover(node.id)}
-          onClick={() => onOpenNote(node.id)}
+          onOpen={() => onOpenNote(node.id)}
         />
       ))}
 
@@ -317,7 +336,6 @@ const PreviewNoteWindow = ({
     <Draggable
       nodeRef={nodeRef}
       position={{ x: data.x, y: data.y }}
-      bounds="parent"
       handle=".preview-note-window-header"
       cancel=".preview-note-window-close"
       onStart={() => {
@@ -330,12 +348,14 @@ const PreviewNoteWindow = ({
       <article
         ref={nodeRef}
         className="absolute pointer-events-auto flex h-[178px] w-[280px] flex-col overflow-hidden border border-[var(--color-fg)] bg-[var(--color-bg)] shadow-[3px_3px_0px_var(--color-fg)]"
-        style={{ zIndex: data.z }}
+        style={{ top: 0, left: 0, zIndex: data.z }}
         onMouseDown={() => onBringToFront(data.id)}
         aria-label={`Preview note ${note.title}`}
       >
         <header className="preview-note-window-header flex cursor-move items-center justify-between border-b border-[var(--color-fg)] px-2 py-1">
-          <h3 className="m-0 truncate text-xs font-bold tracking-tight">{note.title}</h3>
+          <h3 className="m-0 truncate text-xs font-bold tracking-tight">
+            {note.title}
+          </h3>
           <button
             type="button"
             className="preview-note-window-close ml-2 h-6 w-6 cursor-pointer border-0 bg-transparent text-xl leading-none text-[var(--color-fg)] opacity-70 transition-opacity duration-150 hover:opacity-100"
@@ -436,7 +456,8 @@ export const InkNotePreviewGraph = () => {
         }
 
         const offset = current.length * NOTE_WINDOW_OFFSET_STEP;
-        const baseX = surfaceSize.width - NOTE_WINDOW_WIDTH - NOTE_WINDOW_MARGIN - offset;
+        const baseX =
+          surfaceSize.width - NOTE_WINDOW_WIDTH - NOTE_WINDOW_MARGIN - offset;
         const baseY = NOTE_WINDOW_MARGIN + offset;
         const position = clampWindowPosition(baseX, baseY);
 
@@ -446,17 +467,11 @@ export const InkNotePreviewGraph = () => {
     [clampWindowPosition, nextZIndex, surfaceSize.width],
   );
 
-  const moveNote = useCallback(
-    (id: string, x: number, y: number) => {
-      const nextPos = clampWindowPosition(x, y);
-      setOpenNotes((current) =>
-        current.map((item) =>
-          item.id === id ? { ...item, x: nextPos.x, y: nextPos.y } : item,
-        ),
-      );
-    },
-    [clampWindowPosition],
-  );
+  const moveNote = useCallback((id: string, x: number, y: number) => {
+    setOpenNotes((current) =>
+      current.map((item) => (item.id === id ? { ...item, x, y } : item)),
+    );
+  }, []);
 
   const closeNote = useCallback((id: string) => {
     setOpenNotes((current) => current.filter((item) => item.id !== id));

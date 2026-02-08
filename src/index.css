@@ -110,7 +110,7 @@ body {
   min-height: 260px;
   border: 0;
   border-radius: 0;
-  overflow: hidden;
+  overflow: visible;
   background: transparent;
 }
 
@@ -191,4 +191,8 @@ body {
     height: clamp(220px, 30vh, 280px);
     min-height: 220px;
   }
+}
+
+.geist-pixel-square {
+  font-family: "Geist Pixel Square", sans-serif;
 }
