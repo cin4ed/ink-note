@@ -329,23 +329,25 @@ const PreviewNoteWindow = ({
     >
       <article
         ref={nodeRef}
-        className="preview-note-window"
+        className="absolute pointer-events-auto flex h-[178px] w-[280px] flex-col overflow-hidden border border-[var(--color-fg)] bg-[var(--color-bg)] shadow-[3px_3px_0px_var(--color-fg)]"
         style={{ zIndex: data.z }}
         onMouseDown={() => onBringToFront(data.id)}
         aria-label={`Preview note ${note.title}`}
       >
-        <header className="preview-note-window-header">
-          <h3>{note.title}</h3>
+        <header className="preview-note-window-header flex cursor-move items-center justify-between border-b border-[var(--color-fg)] px-2 py-1">
+          <h3 className="m-0 truncate text-xs font-bold tracking-tight">{note.title}</h3>
           <button
             type="button"
-            className="preview-note-window-close"
+            className="preview-note-window-close ml-2 h-6 w-6 cursor-pointer border-0 bg-transparent text-xl leading-none text-[var(--color-fg)] opacity-70 transition-opacity duration-150 hover:opacity-100"
             onClick={() => onClose(data.id)}
             aria-label="Close note"
           >
             ×
           </button>
         </header>
-        <p>{note.snippet}</p>
+        <p className="m-0 flex-1 overflow-y-auto p-2 text-[11px] leading-[1.4] opacity-80">
+          {note.snippet}
+        </p>
       </article>
     </Draggable>
   );

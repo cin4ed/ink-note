@@ -23,13 +23,18 @@ const clerkAppearance = {
 
 export const AuthCard = () => {
   const [mode, setMode] = useState<AuthMode>("sign-in");
+  const tabClassName = (isActive: boolean) =>
+    `cursor-pointer border-0 border-b bg-transparent px-0 py-1 font-mono text-xs text-[var(--color-fg)] transition-[opacity,border-color] duration-[120ms] hover:opacity-[0.85] ${isActive ? "border-[var(--color-fg)]" : "border-transparent"}`;
 
   return (
-    <section className="auth-card-shell" aria-label="Authentication form">
-      <div className="auth-card-tabs" role="tablist" aria-label="Authentication mode">
+    <section
+      className="box-border w-full max-w-[420px] max-[980px]:max-w-none"
+      aria-label="Authentication form"
+    >
+      <div className="mb-[1.1rem] flex gap-[1.1rem]" role="tablist" aria-label="Authentication mode">
         <button
           type="button"
-          className={`auth-card-tab${mode === "sign-in" ? " is-active" : ""}`}
+          className={tabClassName(mode === "sign-in")}
           onClick={() => setMode("sign-in")}
           role="tab"
           aria-selected={mode === "sign-in"}
@@ -38,7 +43,7 @@ export const AuthCard = () => {
         </button>
         <button
           type="button"
-          className={`auth-card-tab${mode === "sign-up" ? " is-active" : ""}`}
+          className={tabClassName(mode === "sign-up")}
           onClick={() => setMode("sign-up")}
           role="tab"
           aria-selected={mode === "sign-up"}
@@ -47,7 +52,7 @@ export const AuthCard = () => {
         </button>
       </div>
 
-      <div className="auth-card-content auth-clerk-shell">
+      <div className="auth-clerk-shell min-h-0 max-[640px]:min-h-[370px]">
         {mode === "sign-in" ? (
           <SignIn routing="virtual" appearance={clerkAppearance} />
         ) : (
