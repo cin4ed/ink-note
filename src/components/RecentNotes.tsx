@@ -38,7 +38,7 @@ export const RecentNotes = () => {
     }, [notes]);
 
     return (
-        <div className="fixed top-4 right-4 z-50 pointer-events-auto select-none text-[var(--color-fg)]">
+        <div className="fixed top-20 right-4 z-50 pointer-events-auto select-none text-[var(--color-fg)]">
             <div className="text-xs opacity-60 font-mono space-y-2 text-right">
                 <div className="text-[10px] uppercase tracking-wider opacity-60">Recent</div>
                 <div className="space-y-1">

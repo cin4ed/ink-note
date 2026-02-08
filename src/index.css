@@ -27,6 +27,11 @@ body {
   min-height: 100vh;
 }
 
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
 .mention {
   color: var(--color-fg);
   background-color: rgba(0, 0, 0, 0.1);
@@ -36,4 +41,289 @@ body {
   font-weight: 600;
   box-shadow: 1px 1px 0px var(--color-fg);
   border: 1px solid var(--color-fg);
+}
+
+.auth-loading-state {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.auth-landing-root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  box-sizing: border-box;
+}
+
+.auth-landing-panel {
+  width: 100%;
+  height: auto;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: clamp(1.2rem, 4vw, 4rem);
+  align-items: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-landing-graph-column {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+}
+
+.auth-landing-copy h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  letter-spacing: -0.04em;
+}
+
+.auth-landing-copy p {
+  margin: 0.35rem 0 0;
+  max-width: 60ch;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  opacity: 0.8;
+}
+
+.auth-landing-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  opacity: 0.7;
+}
+
+.auth-landing-auth-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.auth-card-shell {
+  width: min(420px, 100%);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-card-tabs {
+  display: flex;
+  gap: 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+.auth-card-tab {
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 0.25rem 0;
+  background: transparent;
+  color: var(--color-fg);
+  cursor: pointer;
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.75rem;
+  transition: opacity 120ms ease, border-color 120ms ease;
+}
+
+.auth-card-tab:hover {
+  opacity: 0.85;
+}
+
+.auth-card-tab.is-active {
+  border-color: var(--color-fg);
+}
+
+.auth-card-content {
+  min-height: 0;
+}
+
+.auth-clerk-shell .ink-clerk-root {
+  width: 100%;
+}
+
+.auth-clerk-shell .ink-clerk-card,
+.auth-clerk-shell .ink-clerk-card-box,
+.auth-clerk-shell .ink-clerk-main,
+.auth-clerk-shell .ink-clerk-footer,
+.auth-clerk-shell .ink-clerk-page,
+.auth-clerk-shell .ink-clerk-page-scroll-box,
+.auth-clerk-shell .cl-card,
+.auth-clerk-shell .cl-cardBox,
+.auth-clerk-shell .cl-rootBox {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.auth-clerk-shell .cl-main,
+.auth-clerk-shell .cl-footer,
+.auth-clerk-shell .cl-pageScrollBox,
+.auth-clerk-shell .cl-page {
+  box-shadow: none !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.auth-clerk-shell .ink-clerk-header-title,
+.auth-clerk-shell .ink-clerk-header-subtitle {
+  color: var(--color-fg);
+}
+
+.auth-clerk-shell .ink-clerk-input {
+  border: 1px solid var(--color-fg);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-fg);
+}
+
+.auth-clerk-shell .ink-clerk-primary-btn {
+  border-radius: 10px;
+  border: 1px solid var(--color-fg);
+  box-shadow: 2px 2px 0 var(--color-fg);
+}
+
+.auth-clerk-shell .ink-clerk-social-btn {
+  border-radius: 10px;
+  border: 1px solid var(--color-fg);
+}
+
+.auth-clerk-shell .ink-clerk-link {
+  color: var(--color-fg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.preview-graph-container {
+  position: relative;
+  flex: 0 0 auto;
+  height: clamp(260px, 36vh, 430px);
+  min-height: 260px;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.preview-graph-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  background: transparent;
+}
+
+.preview-graph-surface canvas {
+  background: transparent !important;
+}
+
+.preview-graph-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.preview-graph-edge {
+  stroke: var(--color-fg);
+  stroke-width: 1.2;
+  opacity: 0.55;
+}
+
+.preview-graph-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  border: 1px solid var(--color-fg);
+  background: var(--color-fg);
+  cursor: grab;
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+
+.preview-graph-node.is-hovered,
+.preview-graph-node.is-selected {
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-fg) 16%, transparent);
+  opacity: 0.95;
+}
+
+.preview-graph-node.is-dragging {
+  cursor: grabbing;
+}
+
+.preview-graph-note-card {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.preview-graph-note-card p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.preview-graph-note-title {
+  margin-bottom: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .auth-landing-root {
+    padding: 1rem;
+  }
+
+  .auth-landing-panel {
+    height: auto;
+    max-height: none;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 1.4rem;
+    align-items: start;
+  }
+
+  .auth-landing-auth-column {
+    justify-content: flex-start;
+    padding: 0;
+  }
+
+  .auth-card-shell {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-card-content {
+    min-height: 370px;
+  }
+
+  .preview-graph-container {
+    height: clamp(220px, 30vh, 280px);
+    min-height: 220px;
+  }
 }
