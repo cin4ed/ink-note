@@ -3,24 +3,24 @@
 
 export const Toolbar = () => {
     return (
-        <div className="fixed top-4 left-4 z-50 pointer-events-none select-none text-[var(--color-fg)]">
+        <div className="fixed top-4 left-4 z-50 pointer-events-none select-none text-[var(--color-foreground)]">
             <h1 className="text-2xl font-bold mb-2 tracking-tighter">ink-note</h1>
 
             <div className="text-xs space-y-1 opacity-60 font-mono">
                 <div className="flex items-center gap-2">
-                    <span className="bg-[var(--color-fg)] text-[var(--color-bg)] px-1 rounded text-xs px-1">⌘N</span>
+                    <span className="bg-[var(--color-foreground)] text-[var(--color-background)] px-1 rounded text-xs px-1">⌘N</span>
                     <span>New Note</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="bg-[var(--color-fg)] text-[var(--color-bg)] px-1 rounded text-xs px-1">⌘P</span>
+                    <span className="bg-[var(--color-foreground)] text-[var(--color-background)] px-1 rounded text-xs px-1">⌘P</span>
                     <span>Search</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="bg-[var(--color-fg)] text-[var(--color-bg)] px-1 rounded text-xs px-1">⌘W</span>
+                    <span className="bg-[var(--color-foreground)] text-[var(--color-background)] px-1 rounded text-xs px-1">⌘W</span>
                     <span>Close Note</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="bg-[var(--color-fg)] text-[var(--color-bg)] px-1 rounded text-xs px-1">⌘⇧L</span>
+                    <span className="bg-[var(--color-foreground)] text-[var(--color-background)] px-1 rounded text-xs px-1">⌘⇧L</span>
                     <span>Toggle Theme</span>
                 </div>
             </div>

@@ -42,21 +42,21 @@
 
 @theme {
   /* Light Theme */
-  --color-bg: #DDE0DF;
-  --color-fg: #16151D;
+  --color-background: #DDE0DF;
+  --color-foreground: #16151D;
 }
 
 :root {
   font-family: "Geist Pixel Square", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  --color-bg: #DDE0DF;
-  --color-fg: #16151D;
+  --color-background: #DDE0DF;
+  --color-foreground: #16151D;
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #18181A;
-  --color-fg: #DDE0DF;
+  --color-background: #18181A;
+  --color-foreground: #DDE0DF;
 }
 
 body {
@@ -73,14 +73,14 @@ body {
 }
 
 .mention {
-  color: var(--color-fg);
+  color: var(--color-foreground);
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 0.3rem;
   padding: 0.1rem 0.3rem;
   font-size: 0.8em;
   font-weight: 600;
-  box-shadow: 1px 1px 0px var(--color-fg);
-  border: 1px solid var(--color-fg);
+  box-shadow: 1px 1px 0px var(--color-foreground);
+  border: 1px solid var(--color-foreground);
 }
 
 .auth-clerk-shell .ink-clerk-root {
@@ -116,38 +116,39 @@ body {
 
 .auth-clerk-shell .ink-clerk-header-title,
 .auth-clerk-shell .ink-clerk-header-subtitle {
-  color: var(--color-fg);
+  color: var(--color-foreground);
 }
 
 .auth-clerk-shell .ink-clerk-input {
-  border: 1px solid var(--color-fg);
+  border: 1px solid var(--color-foreground);
   border-radius: 10px;
   background: transparent;
-  color: var(--color-fg);
+  color: var(--color-foreground);
 }
 
 .auth-clerk-shell .ink-clerk-primary-btn {
   border-radius: 10px;
-  border: 1px solid var(--color-fg);
-  box-shadow: 2px 2px 0 var(--color-fg);
+  border: 1px solid var(--color-foreground);
+  box-shadow: 2px 2px 0 var(--color-foreground);
 }
 
 .auth-clerk-shell .ink-clerk-social-btn {
   border-radius: 10px;
-  border: 1px solid var(--color-fg);
+  border: 1px solid var(--color-foreground);
 }
 
 .auth-clerk-shell .ink-clerk-link {
-  color: var(--color-fg);
+  color: var(--color-foreground);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .preview-graph-container {
   position: relative;
+  z-index: 1;
   flex: 0 0 auto;
-  height: clamp(260px, 36vh, 430px);
-  min-height: 260px;
+  height: 800px;
+  width: 800px;
   border: 0;
   border-radius: 0;
   overflow: visible;
@@ -175,7 +176,7 @@ body {
 }
 
 .preview-graph-edge {
-  stroke: var(--color-fg);
+  stroke: var(--color-foreground);
   stroke-width: 1.2;
   opacity: 0.55;
 }
@@ -184,8 +185,8 @@ body {
   position: absolute;
   transform: translate(-50%, -50%);
   border-radius: 999px;
-  border: 1px solid var(--color-fg);
-  background: var(--color-fg);
+  border: 1px solid var(--color-foreground);
+  background: var(--color-foreground);
   cursor: grab;
   box-shadow: 0 0 0 0 transparent;
   transition: box-shadow 120ms ease, opacity 120ms ease, transform 120ms ease;
@@ -193,7 +194,7 @@ body {
 
 .preview-graph-node.is-hovered,
 .preview-graph-node.is-selected {
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-fg) 16%, transparent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-foreground) 16%, transparent);
   opacity: 0.95;
 }
 
@@ -206,7 +207,7 @@ body {
   left: 1rem;
   right: 1rem;
   bottom: 1rem;
-  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  background: color-mix(in srgb, var(--color-background) 92%, transparent);
   border: 0;
   border-radius: 8px;
   box-shadow: none;

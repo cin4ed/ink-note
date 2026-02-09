@@ -113,7 +113,7 @@ const GraphScene = () => {
 
     useEffect(() => {
         const updateColor = () => {
-            setFgColor(getCssVar('--color-fg') || 'black');
+            setFgColor(getCssVar('--color-foreground') || 'black');
         };
         updateColor();
         window.addEventListener('ink-theme-change', updateColor);
@@ -297,7 +297,7 @@ const GraphScene = () => {
                 return (
                     <Html position={[hoveredNode.position.x, hoveredNode.position.y + 0.3, hoveredNode.position.z]} center>
                         <div
-                            className="pointer-events-auto select-none bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-fg)] shadow-[3px_3px_0px_var(--color-fg)] px-2 py-1 text-[10px] font-mono whitespace-nowrap"
+                            className="pointer-events-auto select-none bg-[var(--color-background)] text-[var(--color-foreground)] border border-[var(--color-foreground)] shadow-[3px_3px_0px_var(--color-foreground)] px-2 py-1 text-[10px] font-mono whitespace-nowrap"
                             onClick={() => openNote(hoveredNote.id)}
                             onPointerEnter={() => {
                                 setIsPopupHovered(true);

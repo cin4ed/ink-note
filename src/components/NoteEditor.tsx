@@ -100,7 +100,7 @@ export const NoteEditor = React.forwardRef<NoteEditorHandle, NoteEditorProps>(({
         editable,
         editorProps: {
             attributes: {
-                class: 'outline-none h-full w-full font-serif text-sm leading-5 text-[var(--color-fg)] p-2 prose prose-sm max-w-none'
+                class: 'outline-none h-full w-full font-serif text-sm leading-5 text-[var(--color-foreground)] p-2 prose prose-sm max-w-none'
             }
         }
     });

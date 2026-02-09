@@ -97,14 +97,14 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                 ref={nodeRef}
                 onMouseDown={() => setFocusedNote(note.id)}
                 onFocusCapture={() => setFocusedNote(note.id)}
-                className="pointer-events-auto absolute bg-[var(--color-bg)] border border-[var(--color-fg)] shadow-[4px_4px_0px_var(--color-fg)] flex flex-col overflow-hidden"
+                className="pointer-events-auto absolute bg-[var(--color-background)] border border-[var(--color-foreground)] shadow-[4px_4px_0px_var(--color-foreground)] flex flex-col overflow-hidden"
                 style={{
                     width: note.size?.width ?? 300,
                     height: note.size?.height ?? 200
                 }}
             >
                 {/* Header / Drag Handle */}
-                <div className="flex items-center justify-between p-2 border-b border-[var(--color-fg)] cursor-move drag-handle group">
+                <div className="flex items-center justify-between p-2 border-b border-[var(--color-foreground)] cursor-move drag-handle group">
                     <div className="flex flex-col flex-grow min-w-0 mr-2">
                         <input
                             ref={titleRef}
@@ -113,14 +113,14 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                             onChange={(e) => updateNote(note.id, { title: e.target.value })}
                             onKeyDown={handleTitleKeyDown}
                             onDoubleClick={handleTitleDoubleClick}
-                            className="nodrag bg-transparent font-bold outline-none w-full text-[var(--color-fg)] placeholder-[var(--color-fg)]/50"
+                            className="nodrag bg-transparent font-bold outline-none w-full text-[var(--color-foreground)] placeholder-[var(--color-foreground)]/50"
                             placeholder="Title..."
                         />
                         <span className="text-[10px] opacity-40 font-mono select-none truncate">{note.id}</span>
                     </div>
                     <button
                         onClick={() => closeNote(note.id)}
-                        className="text-[var(--color-fg)] hover:opacity-50 transition-opacity shrink-0"
+                        className="text-[var(--color-foreground)] hover:opacity-50 transition-opacity shrink-0"
                         aria-label="Close note"
                     >
                         <X size={16} />

@@ -41,8 +41,13 @@ interface GraphEdgeProps {
 const NODE_RADIUS = 0.15;
 const HIT_RADIUS = 0.55;
 
-const NOTE_WINDOW_WIDTH = 280;
-const NOTE_WINDOW_HEIGHT = 178;
+/** Default camera distance (z). Larger = more zoomed out, smaller = more zoomed in. */
+const GRAPH_CAMERA_DISTANCE = 12;
+/** Camera field of view in degrees. */
+const GRAPH_CAMERA_FOV = 58;
+
+const NOTE_WINDOW_WIDTH = 500;
+const NOTE_WINDOW_HEIGHT = 400;
 const NOTE_WINDOW_MARGIN = 12;
 const NOTE_WINDOW_OFFSET_STEP = 26;
 
@@ -204,7 +209,7 @@ const PreviewGraphScene = ({
 
   useEffect(() => {
     const updateColor = () => {
-      setFgColor(getCssVar("--color-fg"));
+      setFgColor(getCssVar("--color-foreground"));
     };
 
     updateColor();
@@ -301,7 +306,7 @@ const PreviewGraphScene = ({
           ]}
           center
         >
-          <div className="pointer-events-none select-none bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-fg)] shadow-[3px_3px_0px_var(--color-fg)] px-2 py-1 text-[10px] font-mono whitespace-nowrap">
+          <div className="pointer-events-none select-none bg-[var(--color-background)] text-[var(--color-foreground)] border border-[var(--color-foreground)] shadow-[3px_3px_0px_var(--color-foreground)] px-2 py-1 text-[10px] font-mono whitespace-nowrap">
             {hoveredNode.title}
           </div>
         </Html>
@@ -347,18 +352,18 @@ const PreviewNoteWindow = ({
     >
       <article
         ref={nodeRef}
-        className="absolute pointer-events-auto flex h-[178px] w-[280px] flex-col overflow-hidden border border-[var(--color-fg)] bg-[var(--color-bg)] shadow-[3px_3px_0px_var(--color-fg)]"
+        className="absolute pointer-events-auto flex h-[178px] w-[280px] flex-col overflow-hidden border border-[var(--color-foreground)] bg-[var(--color-background)] shadow-[3px_3px_0px_var(--color-foreground)]"
         style={{ top: 0, left: 0, zIndex: data.z }}
         onMouseDown={() => onBringToFront(data.id)}
         aria-label={`Preview note ${note.title}`}
       >
-        <header className="preview-note-window-header flex cursor-move items-center justify-between border-b border-[var(--color-fg)] px-2 py-1">
+        <header className="preview-note-window-header flex cursor-move items-center justify-between border-b border-[var(--color-foreground)] px-2 py-1">
           <h3 className="m-0 truncate text-xs font-bold tracking-tight">
             {note.title}
           </h3>
           <button
             type="button"
-            className="preview-note-window-close ml-2 h-6 w-6 cursor-pointer border-0 bg-transparent text-xl leading-none text-[var(--color-fg)] opacity-70 transition-opacity duration-150 hover:opacity-100"
+            className="preview-note-window-close ml-2 h-6 w-6 cursor-pointer border-0 bg-transparent text-xl leading-none text-[var(--color-foreground)] opacity-70 transition-opacity duration-150 hover:opacity-100"
             onClick={() => onClose(data.id)}
             aria-label="Close note"
           >
@@ -481,7 +486,7 @@ export const InkNotePreviewGraph = () => {
     <div className="preview-graph-container">
       <div ref={surfaceRef} className="preview-graph-surface">
         <Canvas
-          camera={{ position: [0, 0, 15], fov: 58 }}
+          camera={{ position: [0, 0, GRAPH_CAMERA_DISTANCE], fov: GRAPH_CAMERA_FOV }}
           gl={{ alpha: true, antialias: true }}
           onCreated={({ gl }) => {
             gl.setClearColor(0x000000, 0);

@@ -55,11 +55,11 @@ export const MentionList = forwardRef((props: MentionListProps, ref) => {
     }
 
     return (
-        <div className="bg-[var(--color-bg)] border border-[var(--color-fg)] shadow-[4px_4px_0px_var(--color-fg)] overflow-hidden min-w-[150px] p-1 flex flex-col gap-1">
+        <div className="bg-[var(--color-background)] border border-[var(--color-foreground)] shadow-[4px_4px_0px_var(--color-foreground)] overflow-hidden min-w-[150px] p-1 flex flex-col gap-1">
             {props.items.map((item, index) => (
                 <button
                     className={`text-left px-2 py-1 text-sm font-mono w-full transition-colors truncate
-            ${index === selectedIndex ? 'bg-[var(--color-fg)] text-[var(--color-bg)]' : 'text-[var(--color-fg)] hover:bg-[var(--color-fg)]/10'}
+            ${index === selectedIndex ? 'bg-[var(--color-foreground)] text-[var(--color-background)]' : 'text-[var(--color-foreground)] hover:bg-[var(--color-foreground)]/10'}
           `}
                     key={index}
                     onClick={() => selectItem(index)}

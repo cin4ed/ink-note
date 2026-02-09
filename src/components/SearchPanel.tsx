@@ -70,11 +70,11 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => 
 
             {/* Panel */}
             <div
-                className="relative bg-[var(--color-bg)] border border-[var(--color-fg)] shadow-[4px_4px_0px_var(--color-fg)] w-[400px] max-w-[90vw] flex flex-col"
+                className="relative bg-[var(--color-background)] border border-[var(--color-foreground)] shadow-[4px_4px_0px_var(--color-foreground)] w-[400px] max-w-[90vw] flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Search Input */}
-                <div className="p-3 border-b border-[var(--color-fg)]">
+                <div className="p-3 border-b border-[var(--color-foreground)]">
                     <input
                         ref={inputRef}
                         type="text"
@@ -82,14 +82,14 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => 
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Search notes..."
-                        className="w-full bg-transparent outline-none text-[var(--color-fg)] placeholder-[var(--color-fg)]/50 font-mono"
+                        className="w-full bg-transparent outline-none text-[var(--color-foreground)] placeholder-[var(--color-foreground)]/50 font-mono"
                     />
                 </div>
 
                 {/* Results List */}
                 <div className="max-h-[300px] overflow-y-auto">
                     {filteredNotes.length === 0 ? (
-                        <div className="p-3 text-[var(--color-fg)]/50 text-sm font-mono">
+                        <div className="p-3 text-[var(--color-foreground)]/50 text-sm font-mono">
                             No notes found
                         </div>
                     ) : (
@@ -99,8 +99,8 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => 
                                 onClick={() => handleSelectNote(note.id)}
                                 className={`w-full text-left px-3 py-2 font-mono text-sm transition-colors truncate flex items-center gap-2
                                     ${index === selectedIndex
-                                        ? 'bg-[var(--color-fg)] text-[var(--color-bg)]'
-                                        : 'text-[var(--color-fg)] hover:bg-[var(--color-fg)]/10'
+                                        ? 'bg-[var(--color-foreground)] text-[var(--color-background)]'
+                                        : 'text-[var(--color-foreground)] hover:bg-[var(--color-foreground)]/10'
                                     }`}
                             >
                                 <span className="truncate">{note.title}</span>

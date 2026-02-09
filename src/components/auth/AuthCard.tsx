@@ -1,32 +1,32 @@
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 import { useState } from "react";
+import { cn } from "@/utils/cn";
 
 type AuthMode = "sign-in" | "sign-up";
 
-export const AuthCard = () => {
+export const AuthCard = ({ className = "" }: { className?: string }) => {
   const [mode, setMode] = useState<AuthMode>("sign-in");
 
   const tabClassName = (isActive: boolean) =>
-    `cursor-pointer border-0 border-b-2 bg-transparent px-0 pb-1.5 pt-0 font-mono text-xs tracking-[0.02em] text-[var(--color-fg)] transition-[opacity,border-color] duration-150 hover:opacity-80 ${
-      isActive
-        ? "border-[var(--color-fg)] opacity-100"
-        : "border-transparent opacity-50"
+    `cursor-pointer border-0 border-b-2 bg-transparent px-0 pb-1.5 pt-0 font-mono text-xs tracking-[0.02em] text-[var(--color-foreground)] transition-[opacity,border-color] duration-150 hover:opacity-80 ${isActive
+      ? "border-[var(--color-foreground)] opacity-100"
+      : "border-transparent opacity-50"
     }`;
 
   const ctaClassName =
-    "w-full cursor-pointer border border-[var(--color-fg)] bg-[var(--color-fg)] px-4 py-2.5 font-mono text-xs tracking-[0.02em] text-[var(--color-bg)] shadow-[2px_2px_0px_color-mix(in_srgb,var(--color-fg)_40%,transparent)] transition-[transform,box-shadow] duration-150 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_color-mix(in_srgb,var(--color-fg)_40%,transparent)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none";
+    "w-full cursor-pointer border border-[var(--color-foreground)] bg-[var(--color-foreground)] px-4 py-2.5 font-mono text-xs tracking-[0.02em] text-[var(--color-background)] shadow-[2px_2px_0px_color-mix(in_srgb,var(--color-foreground)_40%,transparent)] transition-[transform,box-shadow] duration-150 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_color-mix(in_srgb,var(--color-foreground)_40%,transparent)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none";
 
   return (
     <section
-      className="box-border w-full max-w-[420px] max-[980px]:max-w-none"
+      className={cn("box-border w-full max-w-[420px] max-[980px]:max-w-none", className)}
       aria-label="Authentication form"
     >
-      <div className="border border-[var(--color-fg)] bg-[var(--color-bg)] p-[clamp(1.2rem,2.5vw,1.8rem)] shadow-[3px_3px_0px_var(--color-fg)]">
+      <div className="border border-[var(--color-foreground)] bg-[var(--color-background)] p-[clamp(1.2rem,2.5vw,1.8rem)] shadow-[3px_3px_0px_var(--color-foreground)]">
         {/* Decorative accent */}
         <div className="mb-4 flex items-center gap-2">
-          <span className="inline-block h-2 w-2 border border-[var(--color-fg)] bg-[var(--color-fg)]" />
-          <span className="inline-block h-2 w-2 border border-[var(--color-fg)]" />
-          <span className="inline-block h-2 w-2 border border-[var(--color-fg)]" />
+          <span className="inline-block h-2 w-2 border border-[var(--color-foreground)] bg-[var(--color-foreground)]" />
+          <span className="inline-block h-2 w-2 border border-[var(--color-foreground)]" />
+          <span className="inline-block h-2 w-2 border border-[var(--color-foreground)]" />
         </div>
 
         {/* Header */}
@@ -41,7 +41,7 @@ export const AuthCard = () => {
 
         {/* Tabs */}
         <div
-          className="mt-5 mb-5 flex gap-5 border-b border-[color-mix(in_srgb,var(--color-fg)_12%,transparent)]"
+          className="mt-5 mb-5 flex gap-5 border-b border-[color-mix(in_srgb,var(--color-foreground)_12%,transparent)]"
           role="tablist"
           aria-label="Authentication mode"
         >
@@ -87,7 +87,7 @@ export const AuthCard = () => {
               Don&apos;t have an account?{" "}
               <button
                 type="button"
-                className="cursor-pointer border-0 bg-transparent p-0 font-mono text-[10px] text-[var(--color-fg)] underline underline-offset-2 opacity-70 transition-opacity duration-150 hover:opacity-100"
+                className="cursor-pointer border-0 bg-transparent p-0 font-mono text-[10px] text-[var(--color-foreground)] underline underline-offset-2 opacity-70 transition-opacity duration-150 hover:opacity-100"
                 onClick={() => setMode("sign-up")}
               >
                 Sign up
@@ -98,7 +98,7 @@ export const AuthCard = () => {
               Already have an account?{" "}
               <button
                 type="button"
-                className="cursor-pointer border-0 bg-transparent p-0 font-mono text-[10px] text-[var(--color-fg)] underline underline-offset-2 opacity-70 transition-opacity duration-150 hover:opacity-100"
+                className="cursor-pointer border-0 bg-transparent p-0 font-mono text-[10px] text-[var(--color-foreground)] underline underline-offset-2 opacity-70 transition-opacity duration-150 hover:opacity-100"
                 onClick={() => setMode("sign-in")}
               >
                 Sign in
