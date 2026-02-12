@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import Draggable from 'react-draggable';
 import { X, ExternalLink } from 'lucide-react';
-import { useStore } from '../store/useStore';
+import { useNotesModel, useWorkspaceFocus } from '@/features/notes/useNotesModel';
 import { NoteEditor } from './NoteEditor';
 import type { NoteEditorHandle } from './NoteEditor';
 import type { Note } from '../types';
@@ -11,16 +11,18 @@ interface NoteWindowProps {
 }
 
 export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
-    const updateNote = useStore((state) => state.updateNote);
-    const closeNote = useStore((state) => state.closeNote);
-    const changeNoteId = useStore((state) => state.changeNoteId);
-    const focusTargetId = useStore((state) => state.focusTargetId);
-    const setFocusTarget = useStore((state) => state.setFocusTarget);
-    const setFocusedNote = useStore((state) => state.setFocusedNote);
+    const { updateNote, closeNote, changeNoteId } = useNotesModel();
+    const { focusTargetId, setFocusTarget, setFocusedNote } = useWorkspaceFocus();
 
     const nodeRef = useRef(null);
     const contentRef = useRef<NoteEditorHandle>(null);
     const titleRef = useRef<HTMLInputElement>(null);
+    const [draftTitle, setDraftTitle] = React.useState(note.title);
+    const [draftSize, setDraftSize] = React.useState<{ width: number; height: number } | null>(null);
+
+    React.useEffect(() => {
+        setDraftTitle(note.title);
+    }, [note.id, note.title]);
 
     // Auto-focus title if this note is the focus target (e.g. just created)
     // Auto-focus title if this note is the focus target (e.g. just created)
@@ -47,16 +49,20 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
         const startY = e.clientY;
         const startWidth = note.size?.width || 300;
         const startHeight = note.size?.height || 200;
+        let finalWidth = startWidth;
+        let finalHeight = startHeight;
 
         const onMouseMove = (moveEvent: MouseEvent) => {
-            const newWidth = Math.max(200, startWidth + (moveEvent.clientX - startX));
-            const newHeight = Math.max(150, startHeight + (moveEvent.clientY - startY));
-            updateNote(note.id, { size: { width: newWidth, height: newHeight } });
+            finalWidth = Math.max(200, startWidth + (moveEvent.clientX - startX));
+            finalHeight = Math.max(150, startHeight + (moveEvent.clientY - startY));
+            setDraftSize({ width: finalWidth, height: finalHeight });
         };
 
         const onMouseUp = () => {
             window.removeEventListener('mousemove', onMouseMove);
             window.removeEventListener('mouseup', onMouseUp);
+            setDraftSize(null);
+            void updateNote(note.id, { size: { width: finalWidth, height: finalHeight } });
         };
 
         window.addEventListener('mousemove', onMouseMove);
@@ -66,14 +72,14 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const newId = note.title
+            const newId = draftTitle
                 .trim()
                 .toLowerCase()
                 .replace(/\s+/g, '-')     // Spaces to dashes
                 .replace(/[^a-z0-9-]/g, ''); // Remove special chars
 
             if (newId && newId !== note.id) {
-                changeNoteId(note.id, newId);
+                void changeNoteId(note.id, newId);
             } else {
                 // If ID didn't change (or invalid), just move focus to content
                 contentRef.current?.focus();
@@ -90,7 +96,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
             nodeRef={nodeRef}
             defaultPosition={note.position}
             onStop={handleStop}
-            handle=".drag-handle"
+                handle=".drag-handle"
             cancel=".nodrag"
         >
             <div
@@ -99,8 +105,8 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                 onFocusCapture={() => setFocusedNote(note.id)}
                 className="pointer-events-auto absolute bg-[var(--color-background)] border border-[var(--color-foreground)] shadow-[4px_4px_0px_var(--color-foreground)] flex flex-col overflow-hidden"
                 style={{
-                    width: note.size?.width ?? 300,
-                    height: note.size?.height ?? 200
+                    width: draftSize?.width ?? note.size?.width ?? 300,
+                    height: draftSize?.height ?? note.size?.height ?? 200
                 }}
             >
                 {/* Header / Drag Handle */}
@@ -109,8 +115,11 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                         <input
                             ref={titleRef}
                             type="text"
-                            value={note.title}
-                            onChange={(e) => updateNote(note.id, { title: e.target.value })}
+                            value={draftTitle}
+                            onChange={(e) => {
+                                setDraftTitle(e.target.value);
+                                void updateNote(note.id, { title: e.target.value });
+                            }}
                             onKeyDown={handleTitleKeyDown}
                             onDoubleClick={handleTitleDoubleClick}
                             className="nodrag bg-transparent font-bold outline-none w-full text-[var(--color-foreground)] placeholder-[var(--color-foreground)]/50"
@@ -119,7 +128,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                         <span className="text-[10px] opacity-40 font-mono select-none truncate">{note.id}</span>
                     </div>
                     <button
-                        onClick={() => closeNote(note.id)}
+                        onClick={() => void closeNote(note.id)}
                         className="text-[var(--color-foreground)] hover:opacity-50 transition-opacity shrink-0"
                         aria-label="Close note"
                     >
@@ -133,7 +142,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                         ref={contentRef}
                         initialContent={note.content}
                         noteId={note.id}
-                        onUpdate={(content) => updateNote(note.id, { content })}
+                        onUpdate={(content) => void updateNote(note.id, { content })}
                     />
                 </div>
 

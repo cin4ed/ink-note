@@ -20,6 +20,14 @@ export interface Note {
     isOpen?: boolean;
 }
 
+export interface NoteUpdate {
+    title?: string;
+    content?: string;
+    position?: Position;
+    size?: Size;
+    isOpen?: boolean;
+}
+
 export type GraphEdge = readonly [string, string];
 
 export interface GraphIndex {
@@ -27,23 +35,4 @@ export interface GraphIndex {
     outgoing: Map<string, Set<string>>;
     undirectedNeighbors: Map<string, Set<string>>;
     undirectedEdges: GraphEdge[];
-}
-
-export interface AppState {
-    notes: Note[];
-
-    addNote: (position?: Position) => void;
-    updateNote: (id: string, updates: Partial<Note>) => void;
-    deleteNote: (id: string) => void;
-    connectNotes: (sourceId: string, targetId: string) => void;
-    disconnectNotes: (sourceId: string, targetId: string) => void;
-
-    // ID update & Focus management
-    focusTargetId: string | null;
-    setFocusTarget: (id: string | null) => void;
-    focusedNoteId: string | null;
-    setFocusedNote: (id: string | null) => void;
-    changeNoteId: (oldId: string, newId: string) => void;
-    closeNote: (id: string) => void;
-    openNote: (id: string) => void;
 }

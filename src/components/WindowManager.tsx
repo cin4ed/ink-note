@@ -1,9 +1,9 @@
-import { useStore } from '../store/useStore';
+import { useNotesModel } from '@/features/notes/useNotesModel';
 import { BackgroundGraph } from './BackgroundGraph';
 import { NoteWindow } from './NoteWindow';
 
 export const WindowManager = () => {
-    const notes = useStore((state) => state.notes);
+    const { notes } = useNotesModel();
 
     return (
         <div className="relative w-full h-full overflow-hidden">

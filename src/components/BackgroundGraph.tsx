@@ -2,8 +2,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls, Html } from '@react-three/drei';
-import { useStore } from '../store/useStore';
-import { selectGraphIndex } from '../store/selectors';
+import { useNotesModel } from '@/features/notes/useNotesModel';
+import { buildGraphIndex } from '@/store/graphIndex';
 
 // Helper to get CSS variable value
 const getCssVar = (name: string) => {
@@ -92,8 +92,8 @@ const GraphConnection = ({ startNode, endNode, color }: { startNode: SimNode; en
 };
 
 const GraphScene = () => {
-    const graphIndex = useStore(selectGraphIndex);
-    const openNote = useStore((state) => state.openNote);
+    const { notes, openNote } = useNotesModel();
+    const graphIndex = useMemo(() => buildGraphIndex(notes), [notes]);
     const noteIds = useMemo(() => Array.from(graphIndex.notesById.keys()), [graphIndex]);
     const [fgColor, setFgColor] = useState("");
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
@@ -267,7 +267,7 @@ const GraphScene = () => {
                                 hoverExitTimeout.current = null;
                             }, HOVER_EXIT_GRACE_MS);
                         }}
-                        onClick={() => openNote(noteId)}
+                        onClick={() => void openNote(noteId)}
                     />
                 );
             })}
@@ -298,7 +298,7 @@ const GraphScene = () => {
                     <Html position={[hoveredNode.position.x, hoveredNode.position.y + 0.3, hoveredNode.position.z]} center>
                         <div
                             className="pointer-events-auto select-none bg-[var(--color-background)] text-[var(--color-foreground)] border border-[var(--color-foreground)] shadow-[3px_3px_0px_var(--color-foreground)] px-2 py-1 text-[10px] font-mono whitespace-nowrap"
-                            onClick={() => openNote(hoveredNote.id)}
+                            onClick={() => void openNote(hoveredNote.id)}
                             onPointerEnter={() => {
                                 setIsPopupHovered(true);
                                 setIsFrozen(true);

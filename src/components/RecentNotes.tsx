@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useStore } from '../store/useStore';
+import { useNotesModel } from '@/features/notes/useNotesModel';
 
 const formatRelativeTime = (timestamp: number) => {
     const now = Date.now();
@@ -28,8 +28,7 @@ const formatRelativeTime = (timestamp: number) => {
 };
 
 export const RecentNotes = () => {
-    const notes = useStore((state) => state.notes);
-    const openNote = useStore((state) => state.openNote);
+    const { notes, openNote } = useNotesModel();
 
     const recentNotes = useMemo(() => {
         return [...notes]
@@ -47,7 +46,7 @@ export const RecentNotes = () => {
                         return (
                             <button
                                 key={note.id}
-                                onClick={() => openNote(note.id)}
+                                onClick={() => void openNote(note.id)}
                                 className="block w-full text-right hover:opacity-80 transition-opacity"
                                 title={title}
                             >

@@ -6,12 +6,15 @@ import { SearchPanel } from "./components/SearchPanel";
 import { RecentNotes } from "./components/RecentNotes";
 import { AuthLandingScreen } from "./components/auth/AuthLandingScreen";
 import { AccountControl } from "./components/AccountControl";
-import { useStore } from "./store/useStore";
+import {
+  NotesModelProvider,
+  useNotesModel,
+  useWorkspaceFocus,
+} from "./features/notes/useNotesModel";
 
 const WorkspaceShell = ({ onToggleTheme }: { onToggleTheme: () => void }) => {
-  const addNote = useStore((state) => state.addNote);
-  const closeNote = useStore((state) => state.closeNote);
-  const focusedNoteId = useStore((state) => state.focusedNoteId);
+  const { addNote, closeNote } = useNotesModel();
+  const { focusedNoteId } = useWorkspaceFocus();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -21,7 +24,7 @@ const WorkspaceShell = ({ onToggleTheme }: { onToggleTheme: () => void }) => {
       // CMD/CTRL + N: New Note
       if ((event.metaKey || event.ctrlKey) && key === "n") {
         event.preventDefault();
-        addNote();
+        void addNote();
       }
 
       // CMD/CTRL + P: Search Notes
@@ -34,7 +37,7 @@ const WorkspaceShell = ({ onToggleTheme }: { onToggleTheme: () => void }) => {
       if ((event.metaKey || event.ctrlKey) && key === "w") {
         if (!focusedNoteId) return;
         event.preventDefault();
-        closeNote(focusedNoteId);
+        void closeNote(focusedNoteId);
       }
 
       // CMD/CTRL + SHIFT + L: Toggle Theme
@@ -92,7 +95,9 @@ function App() {
       </Unauthenticated>
 
       <Authenticated>
-        <WorkspaceShell onToggleTheme={toggleTheme} />
+        <NotesModelProvider>
+          <WorkspaceShell onToggleTheme={toggleTheme} />
+        </NotesModelProvider>
       </Authenticated>
     </main>
   );

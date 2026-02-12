@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useStore } from '../store/useStore';
+import { useNotesModel } from '@/features/notes/useNotesModel';
 
 interface SearchPanelProps {
     isOpen: boolean;
@@ -7,8 +7,7 @@ interface SearchPanelProps {
 }
 
 export const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => {
-    const notes = useStore((state) => state.notes);
-    const openNote = useStore((state) => state.openNote);
+    const { notes, openNote } = useNotesModel();
 
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -44,7 +43,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => 
         } else if (e.key === 'Enter') {
             e.preventDefault();
             if (filteredNotes[selectedIndex]) {
-                openNote(filteredNotes[selectedIndex].id);
+                void openNote(filteredNotes[selectedIndex].id);
                 onClose();
             }
         } else if (e.key === 'Escape') {
@@ -54,7 +53,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => 
     };
 
     const handleSelectNote = (id: string) => {
-        openNote(id);
+        void openNote(id);
         onClose();
     };
 

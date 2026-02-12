@@ -4,7 +4,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Mention from '@tiptap/extension-mention';
 import { ReactRenderer } from '@tiptap/react';
 import tippy from 'tippy.js';
-import { useStore } from '../store/useStore';
+import { useNotesModel } from '@/features/notes/useNotesModel';
 import { MentionList } from './MentionList';
 
 interface NoteEditorProps {
@@ -19,7 +19,7 @@ export interface NoteEditorHandle {
 }
 
 export const NoteEditor = React.forwardRef<NoteEditorHandle, NoteEditorProps>(({ initialContent, noteId, onUpdate, editable = true }, ref) => {
-    const notes = useStore((state) => state.notes);
+    const { notes } = useNotesModel();
 
     const editor = useEditor({
         extensions: [
