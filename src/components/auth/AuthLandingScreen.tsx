@@ -9,15 +9,16 @@ export const AuthLandingScreen = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const h1Ref = useRef<HTMLHeadingElement>(null);
 
-  useGSAP(() => {
-    if (!h1Ref.current) return;
-    gsap.fromTo(
-      h1Ref.current,
-      { x: "-100%" },
-      { x: 0, duration: 0.8, ease: "power3.out" }
-    );
-  },
-    { scope: containerRef }
+  useGSAP(
+    () => {
+      if (!h1Ref.current) return;
+      gsap.fromTo(
+        h1Ref.current,
+        { x: "-100%" },
+        { x: 0, duration: 0.8, ease: "power3.out" },
+      );
+    },
+    { scope: containerRef },
   );
 
   return (
@@ -32,7 +33,7 @@ export const AuthLandingScreen = () => {
             <div className="overflow-hidden">
               <h1
                 ref={h1Ref}
-                className="text-[6rem] tracking-[-0.04em] geist-pixel-line text-box-trim select-none"
+                className="text-[4rem] tracking-[-0.04em] geist-pixel-line text-box-trim select-none"
               >
                 ink-note
               </h1>

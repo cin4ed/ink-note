@@ -1,9 +1,19 @@
-import { cn } from "@/utils/cn"
+import { forwardRef, type ButtonHTMLAttributes } from "react";
+import { cn } from "@/utils/cn";
 
-export const Button = ({ children, className }: { children: React.ReactNode, className?: string }) => {
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, type = "button", ...props }, ref) => {
     return (
-        <button type="button" className={cn("bg-foreground text-background px-4 py-2 select-none", className)}>
-            {children}
-        </button>
-    )
-}
+      <button
+        ref={ref}
+        type={type}
+        className={cn("bg-foreground text-background px-4 py-2 select-none", className)}
+        {...props}
+      />
+    );
+  },
+);
+
+Button.displayName = "Button";
