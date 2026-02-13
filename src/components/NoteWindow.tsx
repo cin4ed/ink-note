@@ -131,7 +131,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
         }}
       >
         {/* Header / Drag Handle */}
-        <div className="flex items-center justify-between p-3 border-b border-card-border cursor-move drag-handle group">
+        <div className="flex items-center justify-between p-3 pb-2 border-b border-card-border cursor-move drag-handle group">
           <div className="flex flex-col min-w-0 mr-2">
             <input
               ref={titleRef}
@@ -149,14 +149,17 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
               }}
               onKeyDown={handleTitleKeyDown}
               onDoubleClick={handleTitleDoubleClick}
-              style={{ fieldSizing: "content" }}
-              className="nodrag font-semibold text-[18px] bg-transparent outline-none text-foreground placeholder-foreground/50 italic text-box-trim"
+              style={{
+                fieldSizing: "content",
+                textBox: "trim-both cap text",
+              }}
+              className="nodrag font-semibold text-[18px] bg-transparent outline-none text-foreground placeholder-foreground/50 italic"
               placeholder="Title..."
             />
           </div>
           <button
             onClick={() => void closeNote(note.id)}
-            className="text-foreground hover:opacity-50 transition-opacity shrink-0"
+            className="text-foreground hover:opacity-50 transition-opacity shrink-0 pb-0.5"
             aria-label="Close note"
           >
             <X size={14} />
