@@ -30,6 +30,12 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     setDraftTitle(note.title);
   }, [note.id, note.title]);
 
+  // Clear the local draft size once the authoritative note.size from the
+  // server catches up, so we never snap back to stale dimensions.
+  React.useEffect(() => {
+    setDraftSize(null);
+  }, [note.size?.width, note.size?.height]);
+
   // Auto-focus title if this note is the focus target (e.g. just created)
   // Auto-focus title if this note is the focus target (e.g. just created)
   React.useEffect(() => {
@@ -67,7 +73,9 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     const onMouseUp = () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
-      setDraftSize(null);
+      // Don't clear draftSize here — the useEffect watching note.size
+      // will clear it once the server-confirmed size arrives, preventing
+      // the snap-back-to-old-size flicker.
       void updateNote(note.id, {
         size: { width: finalWidth, height: finalHeight },
       });
