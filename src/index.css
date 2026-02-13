@@ -92,7 +92,6 @@
   /* Light Theme */
   --color-background: #DDE0DF;
   --color-foreground: #16151D;
-
   --color-card-border: #B7BDBB;
 }
 
@@ -107,6 +106,7 @@
 :root[data-theme="dark"] {
   --color-background: #18181A;
   --color-foreground: #DDE0DF;
+  --color-card-border: #303030;
 }
 
 body {
