@@ -1,6 +1,7 @@
 import React from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import CodeBlock from "@tiptap/extension-code-block";
 import Mention from "@tiptap/extension-mention";
 import { ReactRenderer } from "@tiptap/react";
 import tippy from "tippy.js";
@@ -24,7 +25,18 @@ export const NoteEditor = React.forwardRef<NoteEditorHandle, NoteEditorProps>(
 
     const editor = useEditor({
       extensions: [
-        StarterKit,
+        StarterKit.configure({ codeBlock: false }),
+        CodeBlock.configure({
+          enableTabIndentation: true,
+          tabSize: 2,
+          HTMLAttributes: {
+            spellcheck: "false",
+            autocorrect: "off",
+            autocapitalize: "off",
+            "data-gramm": "false",
+            "data-enable-grammarly": "false",
+          },
+        }),
         Mention.configure({
           HTMLAttributes: {
             class: "mention",
