@@ -15,7 +15,7 @@ interface NoteWindowProps {
 
 export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
   const { updateNote, closeNote, changeNoteId } = useNotesModel();
-  const { focusTargetId, setFocusTarget, setFocusedNote } = useWorkspaceFocus();
+  const { focusTargetId, setFocusTarget, bringToFront, noteZIndices } = useWorkspaceFocus();
 
   const nodeRef = useRef(null);
   const contentRef = useRef<NoteEditorHandle>(null);
@@ -53,6 +53,10 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
       return () => clearTimeout(timer);
     }
   }, [focusTargetId, note.id, setFocusTarget]);
+
+  const handleStart = () => {
+    bringToFront(note.id);
+  };
 
   const handleStop = (_e: any, data: { x: number; y: number }) => {
     updateNote(note.id, { position: { x: data.x, y: data.y } });
@@ -116,18 +120,20 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     <Draggable
       nodeRef={nodeRef}
       defaultPosition={note.position}
+      onStart={handleStart}
       onStop={handleStop}
       handle=".drag-handle"
       cancel=".nodrag"
     >
       <div
         ref={nodeRef}
-        onMouseDown={() => setFocusedNote(note.id)}
-        onFocusCapture={() => setFocusedNote(note.id)}
+        onMouseDown={() => bringToFront(note.id)}
+        onFocusCapture={() => bringToFront(note.id)}
         className="pointer-events-auto absolute bg-[var(--color-background)] border border-card-border flex flex-col overflow-hidden rounded-[9px]"
         style={{
           width: draftSize?.width ?? note.size?.width ?? 300,
           height: draftSize?.height ?? note.size?.height ?? 200,
+          zIndex: noteZIndices[note.id] ?? 0,
         }}
       >
         {/* Header / Drag Handle */}

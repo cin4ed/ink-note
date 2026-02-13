@@ -306,5 +306,7 @@ export const useWorkspaceFocus = () => {
     setFocusTarget: useWorkspaceUiStore((state) => state.setFocusTarget),
     focusedNoteId: useWorkspaceUiStore((state) => state.focusedNoteId),
     setFocusedNote: useWorkspaceUiStore((state) => state.setFocusedNote),
+    bringToFront: useWorkspaceUiStore((state) => state.bringToFront),
+    noteZIndices: useWorkspaceUiStore((state) => state.noteZIndices),
   };
 };
