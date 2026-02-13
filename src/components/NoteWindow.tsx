@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import Draggable from "react-draggable";
-import { X, ExternalLink } from "lucide-react";
+import { X } from "lucide-react";
 import {
   useNotesModel,
   useWorkspaceFocus,
@@ -62,7 +62,10 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     updateNote(note.id, { position: { x: data.x, y: data.y } });
   };
 
-  const handleResizeMouseDown = (e: React.MouseEvent) => {
+  const handleResizeMouseDown = (
+    e: React.MouseEvent,
+    axis: "both" | "x" | "y",
+  ) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -74,8 +77,12 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     let finalHeight = startHeight;
 
     const onMouseMove = (moveEvent: MouseEvent) => {
-      finalWidth = Math.max(200, startWidth + (moveEvent.clientX - startX));
-      finalHeight = Math.max(150, startHeight + (moveEvent.clientY - startY));
+      if (axis !== "y") {
+        finalWidth = Math.max(200, startWidth + (moveEvent.clientX - startX));
+      }
+      if (axis !== "x") {
+        finalHeight = Math.max(150, startHeight + (moveEvent.clientY - startY));
+      }
       setDraftSize({ width: finalWidth, height: finalHeight });
     };
 
@@ -182,15 +189,23 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
           />
         </div>
 
-        {/* Resize Handle */}
+        {/* Right edge resize handle */}
         <div
-          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize nodrag flex items-end justify-end p-1 group z-10"
-          onMouseDown={handleResizeMouseDown}
-        >
-          <div className="opacity-20 group-hover:opacity-100 transition-opacity">
-            <ExternalLink size={12} className="rotate-90 scale-x-[-1]" />
-          </div>
-        </div>
+          className="absolute top-0 right-0 w-2 h-full cursor-ew-resize nodrag z-10"
+          onMouseDown={(e) => handleResizeMouseDown(e, "x")}
+        />
+
+        {/* Bottom edge resize handle */}
+        <div
+          className="absolute bottom-0 left-0 w-full h-2 cursor-ns-resize nodrag z-10"
+          onMouseDown={(e) => handleResizeMouseDown(e, "y")}
+        />
+
+        {/* Bottom-right corner resize handle (invisible) */}
+        <div
+          className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize nodrag z-20"
+          onMouseDown={(e) => handleResizeMouseDown(e, "both")}
+        />
       </div>
     </Draggable>
   );
