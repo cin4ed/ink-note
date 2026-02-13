@@ -54,7 +54,7 @@ const WorkspaceShell = ({ onToggleTheme }: { onToggleTheme: () => void }) => {
   return (
     <>
       <Toolbar />
-      <AccountControl />
+      {/* <AccountControl /> */}
       <RecentNotes />
       <WindowManager />
       <SearchPanel

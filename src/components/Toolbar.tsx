@@ -8,7 +8,7 @@ const shortcut = (mac: string, win: string) => (isMac ? mac : win);
 
 export const Toolbar = () => {
     return (
-        <div className="fixed top-4 left-4 z-50 pointer-events-none select-none text-[var(--color-foreground)]">
+        <div className="fixed top-4 left-4 pointer-events-none select-none text-[var(--color-foreground)]">
             <h1 className="text-2xl font-semibold mb-2 italic tracking-tighter">ink-note</h1>
 
             <div className="text-sm space-y-1 opacity-60">

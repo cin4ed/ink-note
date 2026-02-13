@@ -33,13 +33,13 @@ export const RecentNotes = () => {
     const recentNotes = useMemo(() => {
         return [...notes]
             .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
-            .slice(0, 5);
+            .slice(0, 10);
     }, [notes]);
 
     return (
-        <div className="fixed top-20 right-4 z-50 pointer-events-auto select-none text-[var(--color-foreground)]">
-            <div className="text-xs opacity-60 font-mono space-y-2 text-right">
-                <div className="text-[10px] uppercase tracking-wider opacity-60">Recent</div>
+        <div className="fixed top-4 right-4 pointer-events-auto select-none text-[var(--color-foreground)]">
+            <div className="text-sm opacity-60 space-y-2 text-right">
+                <div className="text-sm tracking-wider">Recent</div>
                 <div className="space-y-1">
                     {recentNotes.map((note) => {
                         const title = note.title?.trim() || 'Untitled';
@@ -52,7 +52,7 @@ export const RecentNotes = () => {
                             >
                                 <span className="flex items-baseline justify-end gap-2">
                                     <span className="truncate">{title}</span>
-                                    <span className="text-[10px] opacity-60 whitespace-nowrap">
+                                    <span className="text-xs opacity-60 whitespace-nowrap">
                                         {formatRelativeTime(note.updatedAt)}
                                     </span>
                                 </span>
