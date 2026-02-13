@@ -20,6 +20,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
   const nodeRef = useRef(null);
   const contentRef = useRef<NoteEditorHandle>(null);
   const titleRef = useRef<HTMLInputElement>(null);
+  const isTitleFocused = useRef(false);
   const [draftTitle, setDraftTitle] = React.useState(note.title);
   const [draftSize, setDraftSize] = React.useState<{
     width: number;
@@ -27,7 +28,11 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
   } | null>(null);
 
   React.useEffect(() => {
-    setDraftTitle(note.title);
+    // Only sync the server title → local draft when the user isn't
+    // actively editing, so we never overwrite mid-typing keystrokes.
+    if (!isTitleFocused.current) {
+      setDraftTitle(note.title);
+    }
   }, [note.id, note.title]);
 
   // Clear the local draft size once the authoritative note.size from the
@@ -132,6 +137,12 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
               ref={titleRef}
               type="text"
               value={draftTitle}
+              onFocus={() => {
+                isTitleFocused.current = true;
+              }}
+              onBlur={() => {
+                isTitleFocused.current = false;
+              }}
               onChange={(e) => {
                 setDraftTitle(e.target.value);
                 void updateNote(note.id, { title: e.target.value });
