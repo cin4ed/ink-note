@@ -13,7 +13,7 @@ export const Toolbar = () => {
 
             <div className="text-sm space-y-1 opacity-60">
                 <div className="flex items-center gap-2">
-                    <span className="rounded bg-foreground/10 px-1">{shortcut("⌘N", "Ctrl+N")}</span>
+                    <span className="rounded bg-foreground/10 px-1">{shortcut("⌘N", "Ctrl+Shift+N")}</span>
                     <span className="">New Note</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -21,7 +21,7 @@ export const Toolbar = () => {
                     <span>Search</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="rounded bg-foreground/10 px-1">{shortcut("⌘W", "Ctrl+W")}</span>
+                    <span className="rounded bg-foreground/10 px-1">{shortcut("⌘W", "Ctrl+Shift+W")}</span>
                     <span>Close Note</span>
                 </div>
                 <div className="flex items-center gap-2">
