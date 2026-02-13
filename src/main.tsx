@@ -12,6 +12,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ClerkProvider
       publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string}
+      afterSignOutUrl="/"
     >
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
         <App />
