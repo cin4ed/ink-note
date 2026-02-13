@@ -1,115 +1,129 @@
-import React, { } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Mention from '@tiptap/extension-mention';
-import { ReactRenderer } from '@tiptap/react';
-import tippy from 'tippy.js';
-import { useNotesModel } from '@/features/notes/useNotesModel';
-import { MentionList } from './MentionList';
+import React from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Mention from "@tiptap/extension-mention";
+import { ReactRenderer } from "@tiptap/react";
+import tippy from "tippy.js";
+import { useNotesModel } from "@/features/notes/useNotesModel";
+import { MentionList } from "./MentionList";
 
 interface NoteEditorProps {
-    initialContent: string;
-    noteId: string;
-    onUpdate: (content: string) => void;
-    editable?: boolean;
+  initialContent: string;
+  noteId: string;
+  onUpdate: (content: string) => void;
+  editable?: boolean;
 }
 
 export interface NoteEditorHandle {
-    focus: () => void;
+  focus: () => void;
 }
 
-export const NoteEditor = React.forwardRef<NoteEditorHandle, NoteEditorProps>(({ initialContent, noteId, onUpdate, editable = true }, ref) => {
+export const NoteEditor = React.forwardRef<NoteEditorHandle, NoteEditorProps>(
+  ({ initialContent, noteId, onUpdate, editable = true }, ref) => {
     const { notes } = useNotesModel();
 
     const editor = useEditor({
-        extensions: [
-            StarterKit,
-            Mention.configure({
-                HTMLAttributes: {
-                    class: 'mention',
+      extensions: [
+        StarterKit,
+        Mention.configure({
+          HTMLAttributes: {
+            class: "mention",
+          },
+          suggestion: {
+            items: ({ query }) => {
+              return notes
+                .filter((n) => n.id !== noteId) // exclude self
+                .filter((n) =>
+                  n.title.toLowerCase().includes(query.toLowerCase()),
+                )
+                .slice(0, 5); // limit to 5
+            },
+            render: () => {
+              let component: ReactRenderer;
+              let popup: any;
+
+              return {
+                onStart: (props) => {
+                  component = new ReactRenderer(MentionList, {
+                    props,
+                    editor: props.editor,
+                  });
+
+                  if (!props.clientRect) {
+                    return;
+                  }
+
+                  popup = tippy("body", {
+                    getReferenceClientRect: props.clientRect as any,
+                    appendTo: () => document.body,
+                    content: component.element,
+                    showOnCreate: true,
+                    interactive: true,
+                    trigger: "manual",
+                    placement: "bottom-start",
+                  });
                 },
-                suggestion: {
-                    items: ({ query }) => {
-                        return notes
-                            .filter(n => n.id !== noteId) // exclude self
-                            .filter(n => n.title.toLowerCase().includes(query.toLowerCase()))
-                            .slice(0, 5); // limit to 5
-                    },
-                    render: () => {
-                        let component: ReactRenderer;
-                        let popup: any;
 
-                        return {
-                            onStart: (props) => {
-                                component = new ReactRenderer(MentionList, {
-                                    props,
-                                    editor: props.editor,
-                                });
-
-                                if (!props.clientRect) {
-                                    return;
-                                }
-
-                                popup = tippy('body', {
-                                    getReferenceClientRect: props.clientRect as any,
-                                    appendTo: () => document.body,
-                                    content: component.element,
-                                    showOnCreate: true,
-                                    interactive: true,
-                                    trigger: 'manual',
-                                    placement: 'bottom-start',
-                                });
-                            },
-
-                            onUpdate: (props) => {
-                                component.updateProps(props);
-                                if (!props.clientRect) {
-                                    return;
-                                }
-                                popup[0].setProps({
-                                    getReferenceClientRect: props.clientRect,
-                                });
-                            },
-
-                            onKeyDown: (props) => {
-                                if (props.event.key === 'Escape') {
-                                    popup[0].hide();
-                                    return true;
-                                }
-                                // Check if the component ref has onKeyDown
-                                const ref = component.ref as any;
-                                if (ref && ref.onKeyDown) {
-                                    return ref.onKeyDown(props);
-                                }
-                                return false;
-                            },
-
-                            onExit: () => {
-                                popup[0].destroy();
-                                component.destroy();
-                            },
-                        };
-                    },
+                onUpdate: (props) => {
+                  component.updateProps(props);
+                  if (!props.clientRect) {
+                    return;
+                  }
+                  popup[0].setProps({
+                    getReferenceClientRect: props.clientRect,
+                  });
                 },
-            }),
-        ],
-        content: initialContent,
-        onUpdate: ({ editor }) => {
-            onUpdate(editor.getHTML());
+
+                onKeyDown: (props) => {
+                  if (props.event.key === "Escape") {
+                    popup[0].hide();
+                    return true;
+                  }
+                  // Check if the component ref has onKeyDown
+                  const ref = component.ref as any;
+                  if (ref && ref.onKeyDown) {
+                    return ref.onKeyDown(props);
+                  }
+                  return false;
+                },
+
+                onExit: () => {
+                  popup[0].destroy();
+                  component.destroy();
+                },
+              };
+            },
+          },
+        }),
+      ],
+      content: initialContent,
+      onUpdate: ({ editor }) => {
+        onUpdate(editor.getHTML());
+      },
+      editable,
+      editorProps: {
+        attributes: {
+          class:
+            "outline-none h-full w-full leading-5 text-[var(--color-foreground)] p-3 prose prose-sm max-w-none",
         },
-        editable,
-        editorProps: {
-            attributes: {
-                class: 'outline-none h-full w-full font-serif text-sm leading-5 text-[var(--color-foreground)] p-2 prose prose-sm max-w-none'
-            }
-        }
+      },
     });
 
-    React.useImperativeHandle(ref, () => ({
+    React.useImperativeHandle(
+      ref,
+      () => ({
         focus: () => {
-            editor?.commands.focus();
-        }
-    }), [editor]);
+          editor?.commands.focus();
+        },
+      }),
+      [editor],
+    );
 
-    return <EditorContent editor={editor} className="flex-grow w-full h-full overflow-y-auto" />;
-});
+    return (
+      <EditorContent
+        editor={editor}
+        className="flex-grow w-full h-full overflow-y-auto"
+      />
+    );
+  },
+);
