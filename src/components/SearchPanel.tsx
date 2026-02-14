@@ -86,7 +86,8 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search notes..."
-            className="w-full bg-transparent outline-none text-[var(--color-foreground)] placeholder-[var(--color-foreground)]/50 "
+            style={{ textBox: "trim-both cap text" }}
+            className="w-full bg-transparent outline-none text-[var(--color-foreground)] placeholder-[var(--color-foreground)]/50"
           />
         </div>
 
@@ -104,7 +105,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                 className={`w-full text-left px-3 py-2 transition-colors truncate flex items-center gap-2
                                     ${
                                       index === selectedIndex
-                                        ? "bg-[var(--color-foreground)] text-[var(--color-background)]"
+                                        ? "bg-foreground/10 "
                                         : "text-[var(--color-foreground)] hover:bg-[var(--color-foreground)]/10"
                                     }`}
               >
