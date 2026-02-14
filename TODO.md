@@ -1,0 +1,2 @@
+- Re-style the landing page.
+- Fix the style for the search panel on light mode.

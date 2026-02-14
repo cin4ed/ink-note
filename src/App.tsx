@@ -5,7 +5,6 @@ import { Toolbar } from "./components/Toolbar";
 import { SearchPanel } from "./components/SearchPanel";
 import { RecentNotes } from "./components/RecentNotes";
 import { AuthLandingScreen } from "./components/auth/AuthLandingScreen";
-import { AccountControl } from "./components/AccountControl";
 import {
   NotesModelProvider,
   useNotesModel,
@@ -21,27 +20,27 @@ const WorkspaceShell = ({ onToggleTheme }: { onToggleTheme: () => void }) => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
 
-      // CMD/CTRL + N: New Note
-      if ((event.metaKey || event.ctrlKey) && key === "n") {
+      // CTRL + N: New Note
+      if (event.ctrlKey && key === "n") {
         event.preventDefault();
         void addNote();
       }
 
-      // CMD/CTRL + P: Search Notes
-      if ((event.metaKey || event.ctrlKey) && key === "p") {
+      // CTRL + P: Search Notes
+      if (event.ctrlKey && key === "p") {
         event.preventDefault();
         setIsSearchOpen(true);
       }
 
-      // CMD/CTRL + W: Close Focused Note
-      if ((event.metaKey || event.ctrlKey) && key === "w") {
+      // CTRL + W: Close Focused Note
+      if (event.ctrlKey && key === "w") {
         if (!focusedNoteId) return;
         event.preventDefault();
         void closeNote(focusedNoteId);
       }
 
-      // CMD/CTRL + SHIFT + L: Toggle Theme
-      if ((event.metaKey || event.ctrlKey) && event.shiftKey && key === "l") {
+      // CTRL + SHIFT + L: Toggle Theme
+      if (event.ctrlKey && event.shiftKey && key === "l") {
         event.preventDefault();
         onToggleTheme();
       }

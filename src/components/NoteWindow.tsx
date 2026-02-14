@@ -6,6 +6,7 @@ import {
   useWorkspaceFocus,
 } from "@/features/notes/useNotesModel";
 import { NoteEditor } from "./NoteEditor";
+import { NoteContextMenu } from "./NoteContextMenu";
 import type { NoteEditorHandle } from "./NoteEditor";
 import type { Note } from "../types";
 
@@ -14,7 +15,7 @@ interface NoteWindowProps {
 }
 
 export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
-  const { updateNote, closeNote, changeNoteId } = useNotesModel();
+  const { updateNote, closeNote, deleteNote, changeNoteId } = useNotesModel();
   const { focusTargetId, setFocusTarget, bringToFront, noteZIndices } =
     useWorkspaceFocus();
 
@@ -26,6 +27,10 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
   const [draftSize, setDraftSize] = React.useState<{
     width: number;
     height: number;
+  } | null>(null);
+  const [contextMenu, setContextMenu] = React.useState<{
+    x: number;
+    y: number;
   } | null>(null);
 
   React.useEffect(() => {
@@ -137,6 +142,10 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
         ref={nodeRef}
         onMouseDown={() => bringToFront(note.id)}
         onFocusCapture={() => bringToFront(note.id)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setContextMenu({ x: e.clientX, y: e.clientY });
+        }}
         className="pointer-events-auto absolute bg-[var(--color-background)] border border-card-border flex flex-col overflow-hidden rounded-[9px]"
         style={{
           width: draftSize?.width ?? note.size?.width ?? 300,
@@ -207,6 +216,14 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
           className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize nodrag z-20"
           onMouseDown={(e) => handleResizeMouseDown(e, "both")}
         />
+
+        {contextMenu && (
+          <NoteContextMenu
+            position={contextMenu}
+            onDelete={() => void deleteNote(note.id)}
+            onClose={() => setContextMenu(null)}
+          />
+        )}
       </div>
     </Draggable>
   );

@@ -78,6 +78,7 @@ export const NotesModelProvider = ({ children }: { children: ReactNode }) => {
   const focusedNoteId = useWorkspaceUiStore((state) => state.focusedNoteId);
   const setFocusTarget = useWorkspaceUiStore((state) => state.setFocusTarget);
   const setFocusedNote = useWorkspaceUiStore((state) => state.setFocusedNote);
+  const bringToFront = useWorkspaceUiStore((state) => state.bringToFront);
 
   const didEnsureWelcomeRef = useRef(false);
   const pendingUpdatesRef = useRef<Map<string, PendingUpdate>>(new Map());
@@ -203,9 +204,9 @@ export const NotesModelProvider = ({ children }: { children: ReactNode }) => {
         noteId: id,
         ...(shouldCenter ? { position: centeredPosition } : {}),
       });
-      setFocusedNote(id);
+      bringToFront(id);
     },
-    [flushPendingUpdate, openNoteMutation, setFocusedNote],
+    [flushPendingUpdate, openNoteMutation, bringToFront],
   );
 
   const closeNote = useCallback(
