@@ -1,15 +1,20 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { AuthLoading, Authenticated, Unauthenticated } from "convex/react";
 import { WindowManager } from "./components/WindowManager";
 import { Toolbar } from "./components/Toolbar";
 import { SearchPanel } from "./components/SearchPanel";
 import { RecentNotes } from "./components/RecentNotes";
-import { AuthLandingScreen } from "./components/auth/AuthLandingScreen";
 import {
   NotesModelProvider,
   useNotesModel,
   useWorkspaceFocus,
 } from "./features/notes/useNotesModel";
+
+const AuthLandingScreen = lazy(() =>
+  import("./components/auth/AuthLandingScreen").then((m) => ({
+    default: m.AuthLandingScreen,
+  })),
+);
 
 const WorkspaceShell = ({ onToggleTheme }: { onToggleTheme: () => void }) => {
   const { addNote, closeNote } = useNotesModel();
@@ -90,7 +95,9 @@ function App() {
       </AuthLoading>
 
       <Unauthenticated>
-        <AuthLandingScreen />
+        <Suspense fallback={null}>
+          <AuthLandingScreen />
+        </Suspense>
       </Unauthenticated>
 
       <Authenticated>

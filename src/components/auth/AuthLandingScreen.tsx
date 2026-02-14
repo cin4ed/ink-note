@@ -1,9 +1,14 @@
-import { useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import { InkNotePreviewGraph } from "./InkNotePreviewGraph";
 import { SignInButton } from "@clerk/clerk-react";
 import { Button } from "@/components/button";
+
+const InkNotePreviewGraph = lazy(() =>
+  import("./InkNotePreviewGraph").then((m) => ({
+    default: m.InkNotePreviewGraph,
+  })),
+);
 
 export const AuthLandingScreen = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +59,9 @@ export const AuthLandingScreen = () => {
         </div>
 
         <div className="flex min-h-0 items-center justify-center max-[980px]:justify-start">
-          <InkNotePreviewGraph />
+          <Suspense fallback={null}>
+            <InkNotePreviewGraph />
+          </Suspense>
         </div>
       </div>
     </section>

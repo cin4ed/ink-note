@@ -14,4 +14,23 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
+          'vendor-editor': [
+            '@tiptap/react',
+            '@tiptap/starter-kit',
+            '@tiptap/extension-mention',
+            '@tiptap/extension-code-block',
+            'tippy.js',
+          ],
+          'vendor-clerk': ['@clerk/clerk-react'],
+          'vendor-convex': ['convex'],
+        },
+      },
+    },
+  },
 })
