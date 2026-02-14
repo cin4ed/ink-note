@@ -27,7 +27,9 @@ const WELCOME_TITLE = "Welcome to ink-note";
 const WELCOME_CONTENT =
   "This is a minimalistic, node-based note taking app.\n\nDrag this window around!";
 
-const requireUserId = async (ctx: { auth: { getUserIdentity: () => Promise<{ tokenIdentifier: string } | null> } }) => {
+const requireUserId = async (ctx: {
+  auth: { getUserIdentity: () => Promise<{ tokenIdentifier: string } | null> };
+}) => {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error("Unauthorized");
@@ -50,7 +52,8 @@ const parseConnections = (content: string, sourceId: string): string[] => {
   return Array.from(connections);
 };
 
-const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export const listNotes = query({
   args: {},
@@ -105,7 +108,9 @@ export const createNote = mutation({
     const userId = await requireUserId(ctx);
     const existing = await ctx.db
       .query("notes")
-      .withIndex("by_user_noteId", (q) => q.eq("userId", userId).eq("noteId", args.noteId))
+      .withIndex("by_user_noteId", (q) =>
+        q.eq("userId", userId).eq("noteId", args.noteId),
+      )
       .unique();
 
     if (existing) {
@@ -137,7 +142,9 @@ export const updateNote = mutation({
     const userId = await requireUserId(ctx);
     const note = await ctx.db
       .query("notes")
-      .withIndex("by_user_noteId", (q) => q.eq("userId", userId).eq("noteId", args.noteId))
+      .withIndex("by_user_noteId", (q) =>
+        q.eq("userId", userId).eq("noteId", args.noteId),
+      )
       .unique();
 
     if (!note) {
@@ -175,7 +182,10 @@ export const updateNote = mutation({
       patch.isOpen = args.updates.isOpen;
     }
 
-    if (args.updates.title !== undefined || args.updates.content !== undefined) {
+    if (
+      args.updates.title !== undefined ||
+      args.updates.content !== undefined
+    ) {
       patch.updatedAt = Date.now();
     }
 
@@ -196,7 +206,9 @@ export const openNote = mutation({
     const userId = await requireUserId(ctx);
     const note = await ctx.db
       .query("notes")
-      .withIndex("by_user_noteId", (q) => q.eq("userId", userId).eq("noteId", args.noteId))
+      .withIndex("by_user_noteId", (q) =>
+        q.eq("userId", userId).eq("noteId", args.noteId),
+      )
       .unique();
 
     if (!note) {
@@ -218,7 +230,9 @@ export const closeNote = mutation({
     const userId = await requireUserId(ctx);
     const target = await ctx.db
       .query("notes")
-      .withIndex("by_user_noteId", (q) => q.eq("userId", userId).eq("noteId", args.noteId))
+      .withIndex("by_user_noteId", (q) =>
+        q.eq("userId", userId).eq("noteId", args.noteId),
+      )
       .unique();
 
     if (!target) {
@@ -259,7 +273,9 @@ export const deleteNote = mutation({
     const userId = await requireUserId(ctx);
     const target = await ctx.db
       .query("notes")
-      .withIndex("by_user_noteId", (q) => q.eq("userId", userId).eq("noteId", args.noteId))
+      .withIndex("by_user_noteId", (q) =>
+        q.eq("userId", userId).eq("noteId", args.noteId),
+      )
       .unique();
 
     if (!target) {
@@ -297,7 +313,9 @@ export const changeNoteId = mutation({
 
     const source = await ctx.db
       .query("notes")
-      .withIndex("by_user_noteId", (q) => q.eq("userId", userId).eq("noteId", args.oldNoteId))
+      .withIndex("by_user_noteId", (q) =>
+        q.eq("userId", userId).eq("noteId", args.oldNoteId),
+      )
       .unique();
 
     if (!source) {
@@ -306,7 +324,9 @@ export const changeNoteId = mutation({
 
     const collision = await ctx.db
       .query("notes")
-      .withIndex("by_user_noteId", (q) => q.eq("userId", userId).eq("noteId", args.newNoteId))
+      .withIndex("by_user_noteId", (q) =>
+        q.eq("userId", userId).eq("noteId", args.newNoteId),
+      )
       .unique();
 
     if (collision) {
@@ -349,16 +369,19 @@ export const changeNoteId = mutation({
         }
 
         if (note.content.includes(`data-id="${args.oldNoteId}"`)) {
-          patch.content = note.content.replace(mentionPattern, (match, openingTag) => {
-            const newOpeningTag = openingTag.replace(
-              `data-id="${args.oldNoteId}"`,
-              `data-id="${args.newNoteId}"`,
-            );
-            if (source.title) {
-              return `${newOpeningTag}@${source.title}</span>`;
-            }
-            return match;
-          });
+          patch.content = note.content.replace(
+            mentionPattern,
+            (match, openingTag) => {
+              const newOpeningTag = openingTag.replace(
+                `data-id="${args.oldNoteId}"`,
+                `data-id="${args.newNoteId}"`,
+              );
+              if (source.title) {
+                return `${newOpeningTag}@${source.title}</span>`;
+              }
+              return match;
+            },
+          );
           didUpdate = true;
         }
 

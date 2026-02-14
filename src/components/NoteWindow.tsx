@@ -15,7 +15,8 @@ interface NoteWindowProps {
 
 export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
   const { updateNote, closeNote, changeNoteId } = useNotesModel();
-  const { focusTargetId, setFocusTarget, bringToFront, noteZIndices } = useWorkspaceFocus();
+  const { focusTargetId, setFocusTarget, bringToFront, noteZIndices } =
+    useWorkspaceFocus();
 
   const nodeRef = useRef(null);
   const contentRef = useRef<NoteEditorHandle>(null);

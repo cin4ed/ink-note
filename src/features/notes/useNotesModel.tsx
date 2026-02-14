@@ -59,7 +59,10 @@ const toClientNote = (note: {
 
 const getDefaultPosition = (): Position => ({
   x: window.innerWidth / 2 - INITIAL_NOTE_WIDTH / 2 + (Math.random() * 50 - 25),
-  y: window.innerHeight / 2 - INITIAL_NOTE_HEIGHT / 2 + (Math.random() * 50 - 25),
+  y:
+    window.innerHeight / 2 -
+    INITIAL_NOTE_HEIGHT / 2 +
+    (Math.random() * 50 - 25),
 });
 
 export const NotesModelProvider = ({ children }: { children: ReactNode }) => {
@@ -259,9 +262,13 @@ export const NotesModelProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const focusedStillExists = openNotes.some((note) => note.id === focusedNoteId);
+    const focusedStillExists = openNotes.some(
+      (note) => note.id === focusedNoteId,
+    );
     if (!focusedStillExists) {
-      setFocusedNote(openNotes.length > 0 ? openNotes[openNotes.length - 1].id : null);
+      setFocusedNote(
+        openNotes.length > 0 ? openNotes[openNotes.length - 1].id : null,
+      );
     }
   }, [focusedNoteId, notes, setFocusedNote]);
 
@@ -286,10 +293,23 @@ export const NotesModelProvider = ({ children }: { children: ReactNode }) => {
       closeNote,
       openNote,
     }),
-    [addNote, changeNoteId, closeNote, deleteNote, notes, notesQuery, openNote, updateNote],
+    [
+      addNote,
+      changeNoteId,
+      closeNote,
+      deleteNote,
+      notes,
+      notesQuery,
+      openNote,
+      updateNote,
+    ],
   );
 
-  return <NotesModelContext.Provider value={value}>{children}</NotesModelContext.Provider>;
+  return (
+    <NotesModelContext.Provider value={value}>
+      {children}
+    </NotesModelContext.Provider>
+  );
 };
 
 export const useNotesModel = () => {
