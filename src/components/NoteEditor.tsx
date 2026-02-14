@@ -116,7 +116,7 @@ export const NoteEditor = React.forwardRef<NoteEditorHandle, NoteEditorProps>(
       editorProps: {
         attributes: {
           class:
-            "outline-none h-full w-full leading-5 text-[var(--color-foreground)] p-3 prose prose-sm max-w-none",
+            "outline-none h-full w-full leading-5 text-[var(--color-foreground)] p-3 prose prose-code:text-foreground max-w-none",
         },
       },
     });

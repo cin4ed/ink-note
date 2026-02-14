@@ -1,2 +1,3 @@
 - Re-style the landing page.
 - Fix the style for the search panel on light mode.
+- Arreglar bold text after adding tailwind/typography. (not showing anymore).
