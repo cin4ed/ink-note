@@ -9,6 +9,7 @@ import { NoteEditor } from "./NoteEditor";
 import { NoteContextMenu } from "./NoteContextMenu";
 import type { NoteEditorHandle } from "./NoteEditor";
 import type { Note } from "../types";
+import { cn } from "@/utils/cn";
 
 interface NoteWindowProps {
   note: Note;
@@ -32,6 +33,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
     x: number;
     y: number;
   } | null>(null);
+  const [isDragging, setIsDragging] = React.useState(false);
 
   React.useEffect(() => {
     // Only sync the server title → local draft when the user isn't
@@ -62,9 +64,11 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
 
   const handleStart = () => {
     bringToFront(note.id);
+    setIsDragging(true);
   };
 
-  const handleStop = (_e: any, data: { x: number; y: number }) => {
+  const handleStop = (_e: unknown, data: { x: number; y: number }) => {
+    setIsDragging(false);
     updateNote(note.id, { position: { x: data.x, y: data.y } });
   };
 
@@ -146,7 +150,10 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
           e.preventDefault();
           setContextMenu({ x: e.clientX, y: e.clientY });
         }}
-        className="pointer-events-auto absolute bg-[var(--color-background)] border border-card-border flex flex-col overflow-hidden rounded-[9px]"
+        className={cn(
+          "note-window pointer-events-auto absolute bg-[var(--color-background)] border border-card-border flex flex-col overflow-hidden rounded-[9px]",
+          isDragging && "note-window--dragging",
+        )}
         style={{
           width: draftSize?.width ?? note.size?.width ?? 300,
           height: draftSize?.height ?? note.size?.height ?? 200,

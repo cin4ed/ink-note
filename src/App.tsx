@@ -87,7 +87,7 @@ function App() {
   }, []);
 
   return (
-    <main className="w-screen h-screen bg-[var(--color-background)] text-[var(--color-foreground)] transition-colors duration-300 antialiased">
+    <main className="w-screen h-screen bg-background text-foreground transition-colors duration-300 antialiased backdrop">
       <AuthLoading>
         <section className="grid h-full w-full place-items-center font-mono text-xs uppercase tracking-[0.03em] opacity-70">
           Loading authentication...

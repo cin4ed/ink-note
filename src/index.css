@@ -318,3 +318,49 @@ body {
 .text-box-trim {
   text-box: trim-both cap alphabetic;
 }
+
+/* .backdrop {
+  position: relative;
+}
+
+.backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/noise-light.png");
+  background-repeat: repeat;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+} */
+
+/* .note-window {
+  background-image: url("/noise-light.png");
+  background-repeat: repeat;
+} */
+
+.note-window {
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  transition: box-shadow 0.15s ease-out, transform 0.15s ease-out;
+}
+
+/* Elevated look when dragging */
+.note-window--dragging {
+  box-shadow:
+    rgba(9, 30, 66, 0.08) 0px 0px 0px 1px,
+    rgba(9, 30, 66, 0.12) 0px 4px 8px -2px,
+    rgba(9, 30, 66, 0.2) 0px 12px 24px -4px;
+  transform: scale(1.01);
+}
+
+/* Dark theme: neutral black shadows (no blue tint), subtle */
+:root[data-theme="dark"] .note-window {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px, rgba(0, 0, 0, 0.1) 0px 0px 1px 1px;
+}
+
+:root[data-theme="dark"] .note-window--dragging {
+  box-shadow:
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.12) 0px 4px 8px -2px,
+    rgba(0, 0, 0, 0.18) 0px 12px 24px -4px;
+}
