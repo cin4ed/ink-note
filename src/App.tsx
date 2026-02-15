@@ -9,6 +9,7 @@ import {
   useNotesModel,
   useWorkspaceFocus,
 } from "./features/notes/useNotesModel";
+import { AccountControl } from "./components/AccountControl";
 
 const AuthLandingScreen = lazy(() =>
   import("./components/auth/AuthLandingScreen").then((m) => ({
@@ -58,7 +59,7 @@ const WorkspaceShell = ({ onToggleTheme }: { onToggleTheme: () => void }) => {
   return (
     <>
       <Toolbar />
-      {/* <AccountControl /> */}
+      <AccountControl />
       <RecentNotes />
       <WindowManager />
       <SearchPanel
