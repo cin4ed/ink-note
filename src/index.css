@@ -204,6 +204,13 @@ body {
   text-underline-offset: 2px;
 }
 
+/* ── Clerk modal: vertically center the sign-in card ── */
+.cl-modalBackdrop {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 /* ── Landing-page background mode: graph is decorative, low-opacity ── */
 .landing-graph-bg {
   opacity: 0.3;
