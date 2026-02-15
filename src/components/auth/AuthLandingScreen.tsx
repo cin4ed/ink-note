@@ -119,10 +119,6 @@ export const AuthLandingScreen = () => {
               Start writing&ensp;&rarr;
             </Button>
           </SignInButton>
-
-          <span className="select-none font-mono text-[0.62rem] uppercase tracking-[0.09em] opacity-30">
-            Free forever
-          </span>
         </div>
 
         {/* Feature hints */}
