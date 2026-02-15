@@ -204,6 +204,15 @@ body {
   text-underline-offset: 2px;
 }
 
+/* ── Landing-page background mode: graph is decorative, low-opacity ── */
+.landing-graph-bg {
+  opacity: 0.3;
+}
+
+:root[data-theme="dark"] .landing-graph-bg {
+  opacity: 0.22;
+}
+
 .preview-graph-container {
   position: relative;
   z-index: 1;
