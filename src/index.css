@@ -356,8 +356,19 @@ body {
 } */
 
 .note-window {
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+  /* box-shadow: 
+    rgba(9, 30, 66, 0.25) 0px 1px 1px, 
+    rgba(9, 30, 66, 0.13) 0px 0px 1px 1px; */
+    box-shadow: 0.2px 0.5px 0.5px hsl(0deg 0% 0% / 0.49);
   transition: box-shadow 0.15s ease-out, transform 0.15s ease-out;
+  /* background: #DADDDC; */
+}
+
+/* Safari: disable transform transition (avoids jank) */
+@supports (-webkit-hyphens: none) {
+  .note-window {
+    transition: box-shadow 0.15s ease-out;
+  }
 }
 
 /* Elevated look when dragging */
@@ -365,8 +376,8 @@ body {
   box-shadow:
     rgba(9, 30, 66, 0.08) 0px 0px 0px 1px,
     rgba(9, 30, 66, 0.12) 0px 4px 8px -2px,
-    rgba(9, 30, 66, 0.2) 0px 12px 24px -4px;
-  transform: scale(1.01);
+    rgba(9, 30, 66, 0.2) 0px 12px 24px -4px; 
+  transform: scale(1.05);
 }
 
 /* Dark theme: neutral black shadows (no blue tint), subtle */
