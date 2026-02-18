@@ -4,12 +4,14 @@ const keymap = {
     sarch: "Ctrl + P",
     closeNote: "Ctrl + W",
     toggleTheme: "Ctrl + Shift + L",
+    linkNotes: "@",
   },
   windows: {
     newNote: "Ctrl + Alt + N",
     sarch: "Ctrl + Alt + P",
     closeNote: "Ctrl + Alt + W",
     toggleTheme: "Ctrl + Shift + L",
+    linkNotes: "@",
   },
 };
 
@@ -47,6 +49,12 @@ export const Toolbar = () => {
             {currentKeymap.toggleTheme}
           </span>
           <span>Toggle Theme</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="rounded bg-foreground/10 px-1">
+            {currentKeymap.linkNotes}
+          </span>
+          <span>Link Notes</span>
         </div>
       </div>
     </div>
