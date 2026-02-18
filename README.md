@@ -2,7 +2,7 @@
 
 A node-based note-taking app with a 3D graph visualization.
 
-<img src="docs/screenshot.png" alt="ink-note" width="500" />
+<img src="docs/screenshot.png" alt="ink-note" style="border-radius: 10px;" />
 
 ## About
 
