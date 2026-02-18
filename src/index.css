@@ -151,6 +151,18 @@ body {
 .prose ol ol ol ol ol { list-style-type: lower-alpha; }
 .prose ol ol ol ol ol ol { list-style-type: lower-roman; }
 
+.prose :where(ol, ul) > li::marker {
+  color: var(--color-foreground);
+}
+
+.prose :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--color-foreground);
+}
+
+.prose :where(strong) {
+  color: var(--color-foreground);
+}
+
 .auth-clerk-shell .ink-clerk-root {
   width: 100%;
 }
