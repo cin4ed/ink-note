@@ -143,6 +143,19 @@ body {
   font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
 }
 
+.prose :where(p) {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+.prose :where(h2) {
+  margin-bottom: 0.9em;
+}
+
+.prose :where(h3) {
+  margin-top: 0.3em;
+}
+
 /* Notion-style nested ordered list markers: decimal → alpha → roman, cycling */
 .prose ol { list-style-type: decimal; }
 .prose ol ol { list-style-type: lower-alpha; }
