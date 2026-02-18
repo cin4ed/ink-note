@@ -162,7 +162,7 @@ export const updateNote = mutation({
     } = {};
 
     if (args.updates.title !== undefined) {
-      patch.title = args.updates.title;
+      patch.title = args.updates.title.slice(0, 100);
     }
 
     if (args.updates.content !== undefined) {

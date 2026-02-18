@@ -166,6 +166,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
             <input
               ref={titleRef}
               type="text"
+              maxLength={100}
               value={draftTitle}
               onFocus={() => {
                 isTitleFocused.current = true;
@@ -183,7 +184,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
                 fieldSizing: "content",
                 textBox: "trim-both cap text",
               }}
-              className="nodrag font-semibold text-[18px] bg-transparent outline-none text-foreground placeholder-foreground/50 italic"
+              className="nodrag font-semibold text-[18px] bg-transparent outline-none text-foreground placeholder-foreground/50 italic max-w-full truncate"
               placeholder="Title..."
             />
           </div>
