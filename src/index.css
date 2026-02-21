@@ -1,112 +1,28 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@font-face {
-  font-family: "Crimson Text";
-  src: url("/fonts/CrimsonText-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Crimson Text";
-  src: url("/fonts/CrimsonText-Italic.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Crimson Text";
-  src: url("/fonts/CrimsonText-SemiBold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Crimson Text";
-  src: url("/fonts/CrimsonText-SemiBoldItalic.woff2") format("woff2");
-  font-weight: 600;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Crimson Text";
-  src: url("/fonts/CrimsonText-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Crimson Text";
-  src: url("/fonts/CrimsonText-BoldItalic.woff2") format("woff2");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Geist Pixel Circle";
-  src: url("/fonts/GeistPixel-Circle.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Geist Pixel Grid";
-  src: url("/fonts/GeistPixel-Grid.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Geist Pixel Line";
-  src: url("/fonts/GeistPixel-Line.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Geist Pixel Square";
-  src: url("/fonts/GeistPixel-Square.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Geist Pixel Triangle";
-  src: url("/fonts/GeistPixel-Triangle.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+@import "./styles/crimson-text-font.css";
+@import "./styles/geist-pixel-font.css";
 
 @theme {
   /* Light Theme */
-  --color-background: #DDE0DF;
-  --color-foreground: #16151D;
-  --color-card-border: #B7BDBB;
+  --color-background: #dde0df;
+  --color-foreground: #16151d;
+  --color-card-border: #b7bdbb;
 }
 
 :root {
-  font-family: "Crimson Text", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:
+    "Crimson Text", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  --color-background: #DDE0DF;
-  --color-foreground: #16151D;
+  --color-background: #dde0df;
+  --color-foreground: #16151d;
 }
 
 :root[data-theme="dark"] {
-  --color-background: #18181A;
-  --color-foreground: #DDE0DF;
+  --color-background: #18181a;
+  --color-foreground: #dde0df;
   --color-card-border: #303030;
 }
 
@@ -140,7 +56,8 @@ body {
 .prose pre code {
   background: none;
   padding: 0;
-  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+  font-family:
+    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
 }
 
 .prose :where(p) {
@@ -156,13 +73,29 @@ body {
   margin-top: 0.3em;
 }
 
+.prose :where(hr) {
+  border-color: var(--color-foreground);
+}
+
 /* Notion-style nested ordered list markers: decimal → alpha → roman, cycling */
-.prose ol { list-style-type: decimal; }
-.prose ol ol { list-style-type: lower-alpha; }
-.prose ol ol ol { list-style-type: lower-roman; }
-.prose ol ol ol ol { list-style-type: decimal; }
-.prose ol ol ol ol ol { list-style-type: lower-alpha; }
-.prose ol ol ol ol ol ol { list-style-type: lower-roman; }
+.prose ol {
+  list-style-type: decimal;
+}
+.prose ol ol {
+  list-style-type: lower-alpha;
+}
+.prose ol ol ol {
+  list-style-type: lower-roman;
+}
+.prose ol ol ol ol {
+  list-style-type: decimal;
+}
+.prose ol ol ol ol ol {
+  list-style-type: lower-alpha;
+}
+.prose ol ol ol ol ol ol {
+  list-style-type: lower-roman;
+}
 
 .prose :where(ol, ul) > li::marker {
   color: var(--color-foreground);
@@ -298,12 +231,16 @@ body {
   background: var(--color-foreground);
   cursor: grab;
   box-shadow: 0 0 0 0 transparent;
-  transition: box-shadow 120ms ease, opacity 120ms ease, transform 120ms ease;
+  transition:
+    box-shadow 120ms ease,
+    opacity 120ms ease,
+    transform 120ms ease;
 }
 
 .preview-graph-node.is-hovered,
 .preview-graph-node.is-selected {
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-foreground) 16%, transparent);
+  box-shadow: 0 0 0 5px
+    color-mix(in srgb, var(--color-foreground) 16%, transparent);
   opacity: 0.95;
 }
 
@@ -367,10 +304,19 @@ body {
   text-box: trim-both cap alphabetic;
 }
 
-/* .backdrop {
+.backdrop {
   position: relative;
 }
 
+.backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/*
 .backdrop::before {
   content: "";
   position: absolute;
@@ -391,8 +337,10 @@ body {
   /* box-shadow: 
     rgba(9, 30, 66, 0.25) 0px 1px 1px, 
     rgba(9, 30, 66, 0.13) 0px 0px 1px 1px; */
-    box-shadow: 0.2px 0.5px 0.5px hsl(0deg 0% 0% / 0.49);
-  transition: box-shadow 0.15s ease-out, transform 0.15s ease-out;
+  box-shadow: 0.2px 0.5px 0.5px hsl(0deg 0% 0% / 0.49);
+  transition:
+    box-shadow 0.15s ease-out,
+    transform 0.15s ease-out;
   /* background: #DADDDC; */
 }
 
@@ -408,13 +356,15 @@ body {
   box-shadow:
     rgba(9, 30, 66, 0.08) 0px 0px 0px 1px,
     rgba(9, 30, 66, 0.12) 0px 4px 8px -2px,
-    rgba(9, 30, 66, 0.2) 0px 12px 24px -4px; 
+    rgba(9, 30, 66, 0.2) 0px 12px 24px -4px;
   transform: scale(1.05);
 }
 
 /* Dark theme: neutral black shadows (no blue tint), subtle */
 :root[data-theme="dark"] .note-window {
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px, rgba(0, 0, 0, 0.1) 0px 0px 1px 1px;
+  box-shadow:
+    rgba(0, 0, 0, 0.2) 0px 1px 1px,
+    rgba(0, 0, 0, 0.1) 0px 0px 1px 1px;
 }
 
 :root[data-theme="dark"] .note-window--dragging {
@@ -427,7 +377,8 @@ body {
 /* Scrollbar styling inside note windows */
 .note-window {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-foreground) 15%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-foreground) 15%, transparent)
+    transparent;
 }
 
 .note-window ::-webkit-scrollbar {

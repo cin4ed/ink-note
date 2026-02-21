@@ -8,9 +8,10 @@ export const AuthCard = ({ className = "" }: { className?: string }) => {
   const [mode, setMode] = useState<AuthMode>("sign-in");
 
   const tabClassName = (isActive: boolean) =>
-    `cursor-pointer border-0 border-b-2 bg-transparent px-0 pb-1.5 pt-0 font-mono text-xs tracking-[0.02em] text-[var(--color-foreground)] transition-[opacity,border-color] duration-150 hover:opacity-80 ${isActive
-      ? "border-[var(--color-foreground)] opacity-100"
-      : "border-transparent opacity-50"
+    `cursor-pointer border-0 border-b-2 bg-transparent px-0 pb-1.5 pt-0 font-mono text-xs tracking-[0.02em] text-[var(--color-foreground)] transition-[opacity,border-color] duration-150 hover:opacity-80 ${
+      isActive
+        ? "border-[var(--color-foreground)] opacity-100"
+        : "border-transparent opacity-50"
     }`;
 
   const ctaClassName =
@@ -18,7 +19,10 @@ export const AuthCard = ({ className = "" }: { className?: string }) => {
 
   return (
     <section
-      className={cn("box-border w-full max-w-[420px] max-[980px]:max-w-none", className)}
+      className={cn(
+        "box-border w-full max-w-[420px] max-[980px]:max-w-none",
+        className,
+      )}
       aria-label="Authentication form"
     >
       <div className="border border-[var(--color-foreground)] bg-[var(--color-background)] p-[clamp(1.2rem,2.5vw,1.8rem)] shadow-[3px_3px_0px_var(--color-foreground)]">

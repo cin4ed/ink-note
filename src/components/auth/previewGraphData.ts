@@ -66,7 +66,8 @@ export const previewNodes: PreviewNode[] = [
   {
     id: "spatial",
     title: "Spatial thinking",
-    snippet: "Position notes in space to mirror how you naturally organize ideas.",
+    snippet:
+      "Position notes in space to mirror how you naturally organize ideas.",
     seed: { x: 0.12, y: 0.2 },
   },
   {
@@ -78,7 +79,8 @@ export const previewNodes: PreviewNode[] = [
   {
     id: "web",
     title: "Web of thought",
-    snippet: "Every mention creates a two-way link, weaving your notes together.",
+    snippet:
+      "Every mention creates a two-way link, weaving your notes together.",
     seed: { x: 0.35, y: 0.12 },
   },
   {
@@ -108,13 +110,15 @@ export const previewNodes: PreviewNode[] = [
   {
     id: "context",
     title: "Never lose context",
-    snippet: "Recent notes and linked mentions keep your train of thought intact.",
+    snippet:
+      "Recent notes and linked mentions keep your train of thought intact.",
     seed: { x: 0.08, y: 0.88 },
   },
   {
     id: "discovery",
     title: "Rediscover ideas",
-    snippet: "The graph surface reveals forgotten connections between old notes.",
+    snippet:
+      "The graph surface reveals forgotten connections between old notes.",
     seed: { x: 0.92, y: 0.68 },
   },
   {

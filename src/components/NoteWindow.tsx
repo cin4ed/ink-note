@@ -151,7 +151,7 @@ export const NoteWindow: React.FC<NoteWindowProps> = ({ note }) => {
           setContextMenu({ x: e.clientX, y: e.clientY });
         }}
         className={cn(
-          "note-window pointer-events-auto absolute bg-[var(--color-background)] border border-card-border flex flex-col overflow-hidden rounded-[9px]",
+          "note-window pointer-events-auto absolute bg-background backdrop border border-card-border flex flex-col overflow-hidden rounded-[9px]",
           isDragging && "note-window--dragging",
         )}
         style={{
